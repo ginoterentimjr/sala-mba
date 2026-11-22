@@ -1,7 +1,8 @@
 // Configuração da sala de aula ao vivo.
-// Edite só os valores entre aspas. Os parâmetros do endereço (?mn=...&pwd=...&titulo=...) têm prioridade sobre estes.
+// Edite só os valores entre aspas. Os parâmetros do endereço (?marca=...&mn=...&pwd=...&titulo=...&quando=...) têm prioridade sobre estes.
+// Nome e e-mail do aluno chegam pelo fragmento do endereço: #nome=...&email=...
 window.SALA = {
-  // Endereço do Cloudflare Worker que gera a assinatura do Zoom (veja o guia de instalação).
+  // Endereço do Cloudflare Worker que gera a assinatura do Zoom (veja a especificação de implantação).
   assinatura: "https://sala-mba-assinatura.gino-bd3.workers.dev",
 
   // Client ID do app Meeting SDK no Zoom Marketplace. Pode ficar público: o segredo fica só no Worker.
@@ -11,9 +12,12 @@ window.SALA = {
   reuniao: "",
   senha: "",
 
+  // Marca padrão da página: "mba" (MBA Gestão Estratégica de Valor) ou "rl" (Gino Terentim · Rethinking Learning).
+  // O parâmetro ?marca= do endereço tem prioridade.
+  marca: "mba",
+
   // Textos da página.
   titulo: "Aula ao vivo",
-  disciplina: "MBA Gestão Estratégica de Valor",
   quando: "",
 
   // Idioma da interface do Zoom.
