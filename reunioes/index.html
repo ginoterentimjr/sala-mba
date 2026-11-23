@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sala de reuniões · Gino Terentim · Rethinking Learning</title>
+<link rel="icon" href="../assets/favicon-gt.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{--escuro:#1B1512;--escuro2:#2A211C;--claro:#F6F2EC;--creme:#FAF5EC;--tinta:#2A211C;--corpo:#4A3F37;--meta:#8D8377;--laranja:#E5662C;--terra:#B04A1C;--ouro:#C9A24D;--filete:#E2D9CD;--verde:#5E7D52;--petroleo:#2F6B6F;--ameixa:#7A4E6D;--ocre:#B5781E;--pessego:#FBEEE5}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;background:var(--claro);color:var(--tinta);font:15px/1.55 Poppins,"Segoe UI",Arial,sans-serif}
+[hidden]{display:none!important}
+button{font:600 15px Poppins,Arial,sans-serif;border:0;border-radius:28px;padding:12px 24px;cursor:pointer;background:var(--laranja);color:#fff;min-height:44px}
+button:hover{background:var(--terra)}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+button.sec{background:transparent;color:var(--tinta);border:1.5px solid var(--filete)}
+button.sec:hover{background:#fff;border-color:var(--laranja);color:var(--terra)}
+button.mini{min-height:34px;padding:6px 14px;font-size:13px}
+input,textarea{width:100%;font:15px Poppins,Arial,sans-serif;padding:11px 14px;border:1.5px solid var(--filete);border-radius:8px;background:var(--creme);color:var(--tinta)}
+input:focus,textarea:focus{outline:none;border-color:var(--laranja);background:#fff}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ------------------------------------------------ antessala */
+.ante{min-height:100%;display:flex;flex-direction:column}
+.ante header{background:var(--escuro);color:var(--creme);border-top:6px solid var(--ouro);padding:22px max(5vw,18px) 28px}
+.marca{display:flex;align-items:center;gap:16px}
+.marca img{height:58px;width:auto}
+.olho{font-size:12px;letter-spacing:3px;font-weight:700;color:var(--ouro);text-transform:uppercase}
+.sub{font-size:12px;letter-spacing:2px;color:#BFB3A3;text-transform:uppercase;margin-top:3px}
+.ante h1{font-size:clamp(26px,3.6vw,38px);line-height:1.14;margin:20px 0 6px;font-weight:700;text-wrap:balance}
+.ante h1 em{font-style:normal;color:var(--laranja)}
+.ante header p{color:#D9CBBE;margin:0;max-width:760px}
+.ante main{flex:1;padding:28px max(5vw,18px) 40px;max-width:1240px;width:100%;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:26px;align-content:start}
+.cartao{background:#fff;border:1px solid var(--filete);border-radius:10px;padding:24px 26px}
+.cartao h2{font-size:19px;margin:0 0 4px}
+.cartao h2 em{font-style:normal;color:var(--laranja)}
+.cartao .nota{color:var(--corpo);font-size:14px;margin:0 0 16px}
+.rot{font-size:11px;letter-spacing:2.4px;font-weight:700;color:var(--laranja);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rot::after{content:"";flex:1;height:1px;background:var(--filete)}
+.status{margin-top:12px;font-size:14px;min-height:22px}
+.status.erro{color:var(--terra);font-weight:600}
+.status.ok{color:var(--verde);font-weight:600}
+.reuniao{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid #EEE7DD}
+.reuniao:last-child{border-bottom:0}
+.dia{width:54px;height:54px;border-radius:10px;background:var(--pessego);color:var(--terra);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;line-height:1.05}
+.dia b{font-size:20px}.dia span{font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+.reuniao h3{font-size:15px;margin:0;font-weight:600}
+.reuniao p{margin:2px 0 0;font-size:13px;color:var(--meta)}
+.linha{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.linha>div{flex:1 1 160px}
+.recursos{list-style:none;margin:0;padding:0}
+.recursos li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid #EEE7DD;font-size:14px;color:var(--corpo)}
+.recursos li:last-child{border-bottom:0}
+.recursos b{display:block;color:var(--tinta);font-size:15px}
+.disco{width:40px;height:40px;border-radius:50%;background:var(--pessego);color:var(--laranja);display:flex;align-items:center;justify-content:center}
+.guardada{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #EEE7DD;font-size:14px}
+.guardada:last-child{border-bottom:0}
+.guardada small{display:block;color:var(--meta)}
+.ante footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5vw,18px);border-bottom:6px solid var(--ouro);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.quem{display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--pessego);border:1px solid #F1D3BF;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:14px}
+
+/* ------------------------------------------------ sala */
+.sala{height:100%;display:flex;flex-direction:column;background:var(--escuro)}
+.barra{display:flex;align-items:center;gap:14px;padding:8px 14px;background:var(--escuro);color:var(--creme);border-top:4px solid var(--ouro);border-bottom:1px solid #3A2E27}
+.barra img{height:34px}
+.barra .titulo{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.relogio{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ouro);font-size:15px}
+.pilula{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;background:#3A2E27;color:#D9CBBE;white-space:nowrap}
+.pilula i{width:9px;height:9px;border-radius:50%;background:var(--meta)}
+.pilula.viva{background:#22331F;color:#CFE5C6}
+.pilula.viva i{background:#7FC46B;animation:pulso 1.4s infinite}
+@keyframes pulso{0%{box-shadow:0 0 0 0 rgba(127,196,107,.7)}100%{box-shadow:0 0 0 9px rgba(127,196,107,0)}}
+.barra button{min-height:34px;padding:6px 14px;font-size:13px}
+.barra button.sec{color:var(--creme);border-color:#5A4A40}
+.barra button.sec:hover{background:#3A2E27;color:#fff}
+.palco{flex:1;display:flex;min-height:0}
+.palco iframe{flex:1;border:0;background:var(--escuro);min-height:0}
+.painel{width:430px;max-width:46vw;display:flex;flex-direction:column;background:var(--claro);border-left:4px solid var(--laranja);min-height:0}
+.sala.sem-painel .painel{display:none}
+.abas{display:flex;background:#fff;border-bottom:1px solid var(--filete)}
+.abas button{flex:1;background:transparent;color:var(--meta);border-radius:0;font-size:13px;min-height:42px;padding:8px;border-bottom:3px solid transparent}
+.abas button:hover{background:var(--creme);color:var(--tinta)}
+.abas button[aria-selected="true"]{color:var(--terra);border-bottom-color:var(--laranja)}
+.abas b{font-weight:700;background:var(--pessego);color:var(--terra);border-radius:10px;padding:1px 8px;font-size:11px;margin-left:4px}
+.dica{background:var(--escuro2);color:#E8DED4;font-size:13px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start}
+.dica b{color:#fff}
+.dica svg{color:var(--ouro);margin-top:2px}
+.fluxo{flex:1;overflow-y:auto;padding:14px 16px 20px;scroll-behavior:smooth}
+.vazio{color:var(--meta);font-size:14px;text-align:center;padding:36px 20px}
+.item{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;padding:8px 8px;border-radius:8px;border-left:3px solid transparent;margin-bottom:2px}
+.item .t{font-size:11px;color:var(--meta);font-variant-numeric:tabular-nums;padding-top:3px}
+.item .q{font-size:12px;font-weight:700;color:var(--petroleo)}
+.item .x{font-size:14px;color:var(--tinta);white-space:pre-wrap;overflow-wrap:anywhere}
+.item.fala{cursor:pointer}
+.item.fala:hover{background:#fff}
+.item.fala.dest{background:#FFF3D6;border-left-color:var(--ocre)}
+.item.fala.dest .q::after{content:"  ★";color:var(--ocre)}
+.item.nota{background:#fff;border:1px solid var(--filete);border-left:3px solid var(--laranja)}
+.item.marco{background:var(--escuro);border-left-color:var(--ouro)}
+.item.marco .x{color:var(--creme);font-weight:600}
+.item.marco .t{color:#BFB3A3}
+.etq{display:inline-block;font-size:10px;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;border-radius:4px;padding:2px 7px;margin-right:6px;background:var(--pessego);color:var(--terra)}
+.etq.decisao{background:#E4EDE0;color:#3F5B36}.etq.acao{background:#E0ECEC;color:#22585C}.etq.duvida{background:#EFE3EC;color:#633C58}.etq.importante{background:#FFE9B8;color:#7A5210}
+.item.marco .etq{background:var(--ouro);color:var(--escuro)}
+.tirar{float:right;background:transparent;color:var(--meta);min-height:0;padding:0 4px;font-size:16px;line-height:1;border-radius:4px}
+.tirar:hover{background:transparent;color:var(--terra)}
+.item.marco .tirar{color:#BFB3A3}
+.agora{position:absolute;right:18px;bottom:12px;min-height:32px;padding:5px 14px;font-size:12px;background:var(--escuro);box-shadow:none}
+.meio{position:relative;flex:1;display:flex;flex-direction:column;min-height:0}
+.mesa{background:#fff;border-top:1px solid var(--filete);padding:12px 16px 14px}
+.marcar{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px;min-height:52px;background:var(--laranja)}
+.marcar.feito{background:var(--verde)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 8px}
+.chips button{min-height:30px;padding:4px 12px;font-size:12px;background:var(--creme);color:var(--corpo);border:1.5px solid var(--filete)}
+.chips button:hover{background:#fff;border-color:var(--laranja);color:var(--terra)}
+.chips button[aria-pressed="true"]{background:var(--escuro);color:#fff;border-color:var(--escuro)}
+.escrever{display:flex;gap:8px;align-items:flex-end}
+.escrever textarea{resize:none;height:64px;font-size:14px}
+.escrever button{min-height:64px;padding:8px 16px;border-radius:8px}
+.atalho{font-size:11px;color:var(--meta);margin-top:6px}
+.atalho kbd{font:600 11px Poppins,Arial,sans-serif;background:var(--creme);border:1px solid var(--filete);border-radius:4px;padding:1px 5px}
+.saidas{padding:16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.saidas .par{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.saidas p{font-size:13px;color:var(--corpo);margin:0}
+.numeros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.numeros div{background:#fff;border:1px solid var(--filete);border-radius:8px;padding:10px 12px}
+.numeros b{display:block;font-size:22px;color:var(--terra);line-height:1.1}
+.numeros span{font-size:11px;color:var(--meta);letter-spacing:1px;text-transform:uppercase}
+@media(max-width:900px){.ante main{grid-template-columns:minmax(0,1fr)}.palco{flex-direction:column}.painel{width:100%;max-width:none;height:48%;border-left:0;border-top:4px solid var(--laranja)}.barra .pilula span.txt{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ================================================ ANTESSALA -->
+<div class="ante" id="ante">
+ <header>
+  <div class="marca">
+   <img src="../assets/logo-gt.png" alt="Gino Terentim · Rethinking Learning">
+   <div><div class="olho">Gino Terentim · Rethinking Learning</div><div class="sub">Sala de reuniões</div></div>
+  </div>
+  <h1>Reunião no Zoom, <em>com transcrição ao vivo e anotações</em></h1>
+  <p>O Zoom abre nesta página, com os controles de anfitrião. Ao lado, a transcrição corre em tempo real, cada momento importante recebe uma marcação e cada anotação fica registrada no minuto em que foi feita.</p>
+ </header>
+ <main>
+  <div>
+   <!-- entrada com o Zoom -->
+   <section class="cartao" id="c-entrar">
+    <div class="rot">Acesso</div>
+    <h2>Entrar com a <em>conta do Zoom</em></h2>
+    <p class="nota">A identidade é conferida no próprio Zoom. Só a conta autorizada conduz reuniões por esta sala, e nenhuma senha fica guardada nesta página.</p>
+    <button id="b-zoom">Entrar com o Zoom</button>
+    <div class="status" id="st-entrar" role="status" aria-live="polite"></div>
+   </section>
+
+   <!-- reuniões -->
+   <section class="cartao" id="c-reunioes" hidden>
+    <div class="quem"><span id="quem"></span><button class="sec mini" id="b-sair">Encerrar a sessão</button></div>
+    <div class="rot">Próximas reuniões</div>
+    <div id="lista"><p class="nota">Carregando a agenda do Zoom…</p></div>
+    <div class="status" id="st-reunioes" role="status" aria-live="polite"></div>
+
+    <div class="rot" style="margin-top:22px">Reunião imediata</div>
+    <div class="linha">
+     <div><label for="novo-titulo">Título da reunião</label><input id="novo-titulo" maxlength="120" placeholder="Alinhamento com o cliente"></div>
+     <button id="b-nova">Abrir agora</button>
+    </div>
+
+    <div class="rot" style="margin-top:22px">Outra reunião</div>
+    <div class="linha">
+     <div><label for="mn">Link do convite ou número da reunião</label><input id="mn" maxlength="300" placeholder="https://zoom.us/j/81234567890?pwd=…"></div>
+     <div><label for="pwd">Senha <span style="font-weight:400;color:var(--meta)">(reuniões de terceiros)</span></label><input id="pwd" maxlength="40" autocomplete="off"></div>
+     <button class="sec" id="b-outra">Entrar</button>
+    </div>
+   </section>
+
+   <!-- acompanhamento de reunião em outro aplicativo -->
+   <section class="cartao" style="margin-top:18px">
+    <div class="rot">Reunião em outro aplicativo</div>
+    <h2>Acompanhar uma reunião <em>conduzida fora desta página</em></h2>
+    <p class="nota">Para reuniões no Zoom de um cliente, no Teams ou no Google Meet. A reunião segue no aplicativo de origem, e este painel registra as marcações e as anotações com o horário exato, para a posterior união com a transcrição.</p>
+    <div class="linha">
+     <div><label for="ac-titulo">Título da reunião</label><input id="ac-titulo" maxlength="120" placeholder="Alinhamento da palestra"></div>
+     <button class="sec" id="b-acompanhar">Iniciar o acompanhamento</button>
+    </div>
+   </section>
+  </div>
+
+  <aside>
+   <div class="cartao">
+    <div class="rot">Recursos</div>
+    <ul class="recursos">
+     <li><span class="disco"><svg class="i" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><div><b>Zoom completo na página</b>Compartilhamento de tela, chat, participantes, segurança, salas simultâneas, enquetes e gravação.</div></li>
+     <li><span class="disco"><svg class="i" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></span><div><b>Transcrição em tempo real</b>Cada fala aparece com o nome de quem fala e o minuto da reunião.</div></li>
+     <li><span class="disco"><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg></span><div><b>Marcação do momento importante</b>Um clique destaca o trecho que acabou de ser dito.</div></li>
+     <li><span class="disco"><svg class="i" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><div><b>Anotações no minuto certo</b>Anotação, decisão, ação ou dúvida, inseridas na linha do tempo da conversa.</div></li>
+     <li><span class="disco"><svg class="i" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg></span><div><b>Transcrição com anotações</b>Ao fim, o documento sai em PDF e em Word, com os destaques reunidos na abertura.</div></li>
+    </ul>
+   </div>
+   <div class="cartao" style="margin-top:18px">
+    <div class="rot">Pasta das transcrições</div>
+    <p class="nota" id="pasta-txt" style="margin:0 0 12px">Escolha uma pasta do Dropbox neste computador. Cada reunião é gravada nela durante a conversa e ao encerrar, pronta para a elaboração da ata e das pendências.</p>
+    <button class="sec mini" id="b-pasta">Escolher a pasta</button>
+   </div>
+   <div class="cartao" style="margin-top:18px">
+    <div class="rot">Transcrições guardadas</div>
+    <div id="guardadas"><p class="nota" style="margin:0">Nenhuma transcrição neste navegador.</p></div>
+   </div>
+  </aside>
+ </main>
+ <footer><span>Gino Terentim · Rethinking Learning · Sala de reuniões</span><span>A reunião acontece no Zoom, dentro desta página.</span></footer>
+</div>
+
+<!-- ================================================ SALA -->
+<div class="sala" id="sala" hidden>
+ <div class="barra">
+  <img src="../assets/logo-gt.png" alt="Gino Terentim · Rethinking Learning">
+  <div class="titulo" id="s-titulo">Reunião</div>
+  <span class="relogio" id="s-relogio" title="Tempo de reunião">00:00</span>
+  <span class="pilula" id="s-estado"><i></i><span class="txt" id="s-estado-txt">Aguardando as legendas</span></span>
+  <button class="sec" id="b-convite" hidden>Copiar o convite</button>
+  <button class="sec" id="b-painel" aria-pressed="true">Ocultar o painel</button>
+  <button id="b-encerrar" hidden>Encerrar o acompanhamento</button>
+  <button class="sec" id="b-voltar" hidden>Voltar às reuniões</button>
+ </div>
+ <div class="palco">
+  <iframe id="quadro" title="Zoom" allow="camera; microphone; display-capture; fullscreen; autoplay; clipboard-read; clipboard-write; speaker-selection"></iframe>
+  <div class="painel" id="painel">
+   <div class="abas" role="tablist">
+    <button role="tab" aria-selected="true" data-aba="tudo">Linha do tempo</button>
+    <button role="tab" aria-selected="false" data-aba="dest">Destaques <b id="n-dest">0</b></button>
+    <button role="tab" aria-selected="false" data-aba="doc">Documento</button>
+   </div>
+   <div class="dica" id="dica">
+    <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    <div><b>Para iniciar a transcrição:</b> na barra do Zoom, clique em <b>Legendas</b> (ou em <b>Mais</b> e depois <b>Legendas</b>), escolha <b>Português</b> como idioma falado e confirme. O texto passa a chegar aqui.</div>
+   </div>
+   <div class="meio" id="v-fluxo">
+    <div class="fluxo" id="fluxo"><div class="vazio" id="vazio">A transcrição aparece aqui assim que as legendas forem ligadas no Zoom. As anotações e as marcações já estão disponíveis.</div></div>
+    <button class="agora" id="b-agora" hidden>Ir para o agora ↓</button>
+   </div>
+   <div class="saidas" id="v-doc" hidden>
+    <div class="numeros">
+     <div><b id="n-falas">0</b><span>Falas</span></div>
+     <div><b id="n-dest2">0</b><span>Destaques</span></div>
+     <div><b id="n-notas">0</b><span>Anotações</span></div>
+    </div>
+    <p>O documento reúne os destaques e as anotações na abertura e, em seguida, a transcrição integral com as marcações no ponto em que aconteceram.</p>
+    <button id="x-pdf">Transcrição com anotações em PDF</button>
+    <div class="par">
+     <button class="sec" id="x-docx">Word (.docx)</button>
+     <button class="sec" id="x-md">Texto (.md)</button>
+    </div>
+    <button class="sec" id="x-json">Dados da sessão (.json)</button>
+    <p id="st-doc" class="status" role="status" aria-live="polite"></p>
+    <p id="pasta-doc">A transcrição também fica guardada neste navegador e reaparece na tela inicial, em "Transcrições guardadas".</p>
+   </div>
+   <div class="mesa" id="mesa">
+    <button class="marcar" id="b-marcar"><svg class="i" viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span id="t-marcar">Marcar este momento</span></button>
+    <div class="chips" role="group" aria-label="Tipo de registro">
+     <button data-etq="anotacao" aria-pressed="true">Anotação</button>
+     <button data-etq="decisao" aria-pressed="false">Decisão</button>
+     <button data-etq="acao" aria-pressed="false">Ação</button>
+     <button data-etq="duvida" aria-pressed="false">Dúvida</button>
+    </div>
+    <div class="escrever">
+     <textarea id="texto" placeholder="Escreva a anotação. Ela entra no minuto atual da conversa." aria-label="Anotação"></textarea>
+     <button id="b-anotar">Inserir</button>
+    </div>
+    <div class="atalho"><kbd>Enter</kbd> insere a anotação · <kbd>Shift</kbd> + <kbd>Enter</kbd> quebra a linha · <kbd>Alt</kbd> + <kbd>M</kbd> marca o momento · um clique numa fala a destaca</div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script src="config.js"></script>
+<script src="vendor/docx.umd.js" defer></script>
+<script>
+{
+const C = window.REUNIOES || {};
+const $ = id => document.getElementById(id);
+const AQUI = location.origin + location.pathname;            // endereço de retorno registrado no app do Zoom
+const ETQ = { anotacao: "Anotação", decisao: "Decisão", acao: "Ação", duvida: "Dúvida", importante: "Momento importante" };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const status = (id, t, tipo = "") => { const s = $(id); s.textContent = t; s.className = "status " + tipo; };
+
+// ================================================================ armazenamento
+const guarda = {
+  ler(ch, padrao) { try { const v = localStorage.getItem(ch); return v ? JSON.parse(v) : padrao; } catch (e) { return padrao; } },
+  gravar(ch, v) { try { localStorage.setItem(ch, JSON.stringify(v)); return true; } catch (e) { return false; } },
+  tirar(ch) { try { localStorage.removeItem(ch); } catch (e) {} }
+};
+const sessaoZoom = {
+  ler() { try { return JSON.parse(sessionStorage.getItem("reunioes:zoom") || "null"); } catch (e) { return null; } },
+  gravar(v) { try { sessionStorage.setItem("reunioes:zoom", JSON.stringify(v)); } catch (e) {} },
+  tirar() { try { sessionStorage.removeItem("reunioes:zoom"); } catch (e) {} }
+};
+
+// ================================================================ pasta das transcrições (Dropbox local)
+const pasta = {
+  alca: null,
+  bd() { return new Promise((ok, falha) => { const r = indexedDB.open("reunioes", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => ok(r.result); r.onerror = () => falha(r.error); }); },
+  async ler() { try { const bd = await this.bd(); return await new Promise(ok => { const r = bd.transaction("kv").objectStore("kv").get("pasta"); r.onsuccess = () => ok(r.result || null); r.onerror = () => ok(null); }); } catch (e) { return null; } },
+  async guardar(h) { const bd = await this.bd(); await new Promise(ok => { const t = bd.transaction("kv", "readwrite"); t.objectStore("kv").put(h, "pasta"); t.oncomplete = ok; t.onerror = ok; }); },
+  async escolher() { const h = await window.showDirectoryPicker({ id: "reunioes", mode: "readwrite", startIn: "documents" }); this.alca = h; await this.guardar(h); return h; },
+  // Chamado num clique: o navegador só renova a permissão de gravação a pedido do usuário.
+  async garantir() {
+    try {
+      if (!this.alca) this.alca = await this.ler();
+      if (!this.alca) return false;
+      if (await this.alca.queryPermission({ mode: "readwrite" }) === "granted") return true;
+      return await this.alca.requestPermission({ mode: "readwrite" }) === "granted";
+    } catch (e) { return false; }
+  },
+  async gravar(nome, blob) {
+    if (!this.alca) return false;
+    try {
+      if (await this.alca.queryPermission({ mode: "readwrite" }) !== "granted") return false;
+      const f = await this.alca.getFileHandle(nome, { create: true }); const w = await f.createWritable(); await w.write(blob); await w.close(); return true;
+    } catch (e) { return false; }
+  }
+};
+async function mostrarPasta() {
+  if (!window.showDirectoryPicker) { $("pasta-txt").textContent = "Este navegador não grava em pastas. No Chrome ou no Edge do computador, a gravação automática na pasta do Dropbox fica disponível."; $("b-pasta").hidden = true; return; }
+  if (!pasta.alca) pasta.alca = await pasta.ler();
+  if (pasta.alca) { $("pasta-txt").innerHTML = `Pasta atual: <b>${esc(pasta.alca.name)}</b>. Cada reunião é gravada nela durante a conversa e ao encerrar.`; $("b-pasta").textContent = "Trocar a pasta"; }
+}
+$("b-pasta").addEventListener("click", async () => { try { await pasta.escolher(); await mostrarPasta(); } catch (e) {} });
+
+// ================================================================ serviço (Cloudflare Worker)
+async function servico(rota, corpo) {
+  const r = await fetch(C.servico + rota, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(d.error || "O serviço não respondeu."); e.status = r.status; throw e; }
+  return d;
+}
+async function tokenValido() {
+  let z = sessaoZoom.ler();
+  if (!z) throw Object.assign(new Error("Sessão ausente. Entre de novo com o Zoom."), { status: 401 });
+  if (Date.now() > z.expira - 120000 && z.refresh_token) {
+    const n = await servico("/anfitriao/renovar", { refresh_token: z.refresh_token });
+    z = { ...n, expira: Date.now() + n.expires_in * 1000 }; sessaoZoom.gravar(z);
+  }
+  return z.access_token;
+}
+
+// ================================================================ entrada com o Zoom (OAuth com PKCE)
+const b64url = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+async function irAoZoom() {
+  const verificador = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const desafio = b64url(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verificador)));
+  const estado = b64url(crypto.getRandomValues(new Uint8Array(16)));
+  sessionStorage.setItem("reunioes:pkce", JSON.stringify({ verificador, estado }));
+  const u = new URL("https://zoom.us/oauth/authorize");
+  u.search = new URLSearchParams({ response_type: "code", client_id: C.clientId, redirect_uri: AQUI, state: estado, code_challenge: desafio, code_challenge_method: "S256" });
+  location.href = u.toString();
+}
+async function retornoDoZoom() {
+  const q = new URLSearchParams(location.search);
+  const code = q.get("code"), estado = q.get("state");
+  if (!code) return false;
+  history.replaceState(null, "", AQUI);
+  let p = null; try { p = JSON.parse(sessionStorage.getItem("reunioes:pkce") || "null"); } catch (e) {}
+  sessionStorage.removeItem("reunioes:pkce");
+  if (!p || p.estado !== estado) { status("st-entrar", "A autorização não confere com o pedido desta página. Entre de novo.", "erro"); return false; }
+  status("st-entrar", "Conferindo a conta no Zoom…");
+  try {
+    const n = await servico("/anfitriao/sessao", { code, redirect_uri: AQUI, code_verifier: p.verificador });
+    sessaoZoom.gravar({ ...n, expira: Date.now() + n.expires_in * 1000 });
+    return true;
+  } catch (e) { status("st-entrar", e.message, "erro"); return false; }
+}
+
+// ================================================================ antessala
+const fmtDia = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+const fmtData = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const fmtHora = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });
+const fmtMes = new Intl.DateTimeFormat("pt-BR", { month: "short" });
+
+async function mostrarReunioes() {
+  const z = sessaoZoom.ler();
+  $("c-entrar").hidden = true; $("c-reunioes").hidden = false;
+  $("quem").innerHTML = `Conta do Zoom: <b>${esc(z.nome)}</b> · ${esc(z.email)}`;
+  try {
+    const d = await servico("/anfitriao/reunioes", { access_token: await tokenValido() });
+    const itens = (d.meetings || []).filter(m => m.id).sort((a, b) => String(a.start_time || "9").localeCompare(String(b.start_time || "9"))).slice(0, 12);
+    if (!itens.length) { $("lista").innerHTML = '<p class="nota">Nenhuma reunião agendada no Zoom. Abra uma reunião imediata abaixo.</p>'; return; }
+    $("lista").innerHTML = "";
+    for (const m of itens) {
+      const dt = m.start_time ? new Date(m.start_time) : null;
+      const el = document.createElement("div"); el.className = "reuniao";
+      el.innerHTML = `<div class="dia">${dt ? `<b>${dt.getDate()}</b><span>${esc(fmtMes.format(dt).replace(".", ""))}</span>` : `<b>∞</b><span>fixa</span>`}</div>
+        <div><h3>${esc(m.topic)}</h3><p>${dt ? esc(fmtDia.format(dt)) + ", " + esc(fmtHora.format(dt)) + (m.duration ? " · " + m.duration + " min" : "") : "Reunião recorrente sem horário fixo"} · ${esc(m.id.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1 $2 $3"))}</p></div>
+        <button class="mini">Abrir</button>`;
+      el.querySelector("button").addEventListener("click", ev => abrir(m.id, "", m.topic, ev.currentTarget));
+      $("lista").appendChild(el);
+    }
+  } catch (e) {
+    if (e.status === 401) { sessaoZoom.tirar(); $("c-entrar").hidden = false; $("c-reunioes").hidden = true; status("st-entrar", e.message, "erro"); return; }
+    $("lista").innerHTML = ""; status("st-reunioes", e.message, "erro");
+  }
+}
+
+$("b-zoom").addEventListener("click", () => { $("b-zoom").disabled = true; irAoZoom(); });
+$("b-sair").addEventListener("click", () => { sessaoZoom.tirar(); location.href = AQUI; });
+$("b-nova").addEventListener("click", async ev => {
+  const b = ev.currentTarget; b.disabled = true; status("st-reunioes", "Criando a reunião no Zoom…");
+  try {
+    const titulo = $("novo-titulo").value.trim() || "Reunião";
+    const m = await servico("/anfitriao/nova", { access_token: await tokenValido(), topic: titulo });
+    await abrir(m.id, m.password, m.topic, b);
+  } catch (e) { status("st-reunioes", e.message, "erro"); b.disabled = false; }
+});
+$("b-outra").addEventListener("click", ev => {
+  const bruto = $("mn").value.trim();
+  let mn = "", senha = $("pwd").value.trim();
+  const link = bruto.match(/\/(?:j|s|w|wc\/join)\/(\d{9,12})/);
+  if (link) { mn = link[1]; const pw = bruto.match(/[?&]pwd=([^&#\s]+)/); if (pw && !senha) senha = decodeURIComponent(pw[1]); }
+  else mn = bruto.replace(/\D/g, "");
+  if (!/^\d{9,12}$/.test(mn)) { status("st-reunioes", "Informe o link do convite ou o número da reunião, com 9 a 12 dígitos.", "erro"); return; }
+  abrir(mn, senha, "", ev.currentTarget);
+});
+
+function listarGuardadas() {
+  const indice = guarda.ler("reunioes:indice", []);
+  const alvo = $("guardadas");
+  if (!indice.length) { alvo.innerHTML = '<p class="nota" style="margin:0">Nenhuma transcrição neste navegador.</p>'; return; }
+  alvo.innerHTML = "";
+  for (const s of indice.slice().reverse()) {
+    const el = document.createElement("div"); el.className = "guardada";
+    const dt = new Date(s.inicio);
+    el.innerHTML = `<div><b>${esc(s.titulo)}</b><small>${esc(fmtDia.format(dt))}, ${esc(fmtHora.format(dt))} · ${s.falas} falas · ${s.destaques} destaques</small></div>
+      <span style="display:flex;gap:6px;flex:none"><button class="mini sec" data-a="abrir">Abrir</button><button class="mini sec" data-a="excluir">Excluir</button></span>`;
+    el.querySelector('[data-a="abrir"]').addEventListener("click", () => reabrir(s.id));
+    const bx = el.querySelector('[data-a="excluir"]');
+    bx.addEventListener("click", () => {
+      if (bx.dataset.certo) { guarda.tirar("reunioes:s:" + s.id); guarda.gravar("reunioes:indice", guarda.ler("reunioes:indice", []).filter(x => x.id !== s.id)); listarGuardadas(); }
+      else { bx.dataset.certo = "1"; bx.textContent = "Confirmar a exclusão"; setTimeout(() => { delete bx.dataset.certo; bx.textContent = "Excluir"; }, 4000); }
+    });
+    alvo.appendChild(el);
+  }
+}
+
+// ================================================================ sessão de reunião (transcrição, anotações, destaques)
+let S = null;             // sessão em curso ou reaberta
+let aoVivo = false;
+let entrada = null;       // dados de entrada aguardando o quadro do Zoom
+let fonteSdk = false, falante = "", etqAtual = "anotacao", abaAtual = "tudo", colado = true, relogioId = 0, gravarId = 0;
+const nomes = new Map();  // userId -> nome
+
+function novaSessao(titulo, mn, convite) {
+  return { id: Date.now().toString(36), titulo: titulo || "Reunião", mn, convite: convite || "", inicio: Date.now(), fim: 0, anfitriao: (sessaoZoom.ler() || {}).nome || "", participantes: [], itens: [], seq: 0 };
+}
+function agoraMs() { return Date.now() - S.inicio; }
+function relativo(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+  return (h ? h + ":" + String(m).padStart(2, "0") : String(m).padStart(2, "0")) + ":" + String(ss).padStart(2, "0");
+}
+function gravarSessao() {
+  if (!S) return;
+  guarda.gravar("reunioes:s:" + S.id, S);
+  const indice = guarda.ler("reunioes:indice", []).filter(x => x.id !== S.id);
+  indice.push({ id: S.id, titulo: S.titulo, inicio: S.inicio, falas: S.itens.filter(i => i.tipo === "fala").length, destaques: contarDestaques() });
+  guarda.gravar("reunioes:indice", indice.slice(-60));
+}
+function gravarLogo() { clearTimeout(gravarId); gravarId = setTimeout(gravarSessao, 1200); sujo = true; }
+let sujo = false, gravandoPasta = false;
+async function gravarNaPasta(final) {
+  if (!S || !pasta.alca || gravandoPasta || (!sujo && !final)) return;
+  gravandoPasta = true; sujo = false;
+  try {
+    const R = retrato();
+    const ok = await pasta.gravar(R.arquivo + ".json", new Blob([JSON.stringify(S, null, 1)], { type: "application/json" }));
+    await pasta.gravar(R.arquivo + ".md", new Blob([documentoMd()], { type: "text/markdown;charset=utf-8" }));
+    if (final) { try { const w = await documentoDocx(); if (w) await pasta.gravar(R.arquivo + ".docx", w); } catch (e) {} }
+    if (ok) $("pasta-doc").innerHTML = `Gravado na pasta <b>${esc(pasta.alca.name)}</b> às ${esc(fmtHora.format(new Date()))}: ${esc(R.arquivo)} (.md, .json${final ? ", .docx" : ""}).`;
+  } finally { gravandoPasta = false; }
+}
+setInterval(() => gravarNaPasta(false), 20000);
+function contarDestaques() { return S.itens.filter(i => i.tipo === "marco" || (i.tipo === "fala" && i.dest)).length; }
+
+function incluir(item) {
+  item.id = ++S.seq; item.t = item.t ?? agoraMs();
+  S.itens.push(item); desenhar(item); contadores(); gravarLogo();
+  return item;
+}
+function elementoDe(item) { return document.querySelector(`#fluxo [data-id="${item.id}"]`); }
+function desenhar(item) {
+  $("vazio")?.remove();
+  let el = elementoDe(item);
+  const novo = !el;
+  if (novo) { el = document.createElement("div"); el.dataset.id = item.id; $("fluxo").appendChild(el); }
+  el.className = "item " + item.tipo + (item.dest ? " dest" : "");
+  const tirar = `<button class="tirar" title="Excluir este registro" aria-label="Excluir este registro">×</button>`;
+  if (item.tipo === "fala") {
+    el.title = "Clique para destacar esta fala";
+    el.innerHTML = `<div class="t">${relativo(item.t)}</div><div><div class="q">${esc(item.quem || "Participante")}</div><div class="x">${esc(item.texto)}</div></div>`;
+  } else if (item.tipo === "nota") {
+    el.innerHTML = `<div class="t">${relativo(item.t)}</div><div>${tirar}<span class="etq ${item.etq}">${esc(ETQ[item.etq] || "Anotação")}</span><div class="x">${esc(item.texto)}</div></div>`;
+  } else {
+    el.innerHTML = `<div class="t">${relativo(item.t)}</div><div>${tirar}<span class="etq">★ ${esc(ETQ.importante)}</span><div class="x">${esc(item.texto || "Marcado por " + (S.anfitriao || "anfitrião"))}</div></div>`;
+  }
+  filtrar(el, item);
+  if (novo && colado && abaAtual !== "doc") $("fluxo").scrollTop = $("fluxo").scrollHeight;
+}
+function filtrar(el, item) { el.hidden = abaAtual === "dest" && !(item.tipo !== "fala" || item.dest); }
+function redesenharTudo() {
+  $("fluxo").innerHTML = S.itens.length ? "" : '<div class="vazio" id="vazio">Nenhum registro nesta sessão.</div>';
+  S.itens.forEach(desenhar); contadores();
+}
+function contadores() {
+  const d = contarDestaques();
+  $("n-dest").textContent = d; $("n-dest2").textContent = d;
+  $("n-falas").textContent = S.itens.filter(i => i.tipo === "fala").length;
+  $("n-notas").textContent = S.itens.filter(i => i.tipo === "nota").length;
+}
+
+// ---- legendas recebidas do quadro do Zoom
+function textoDe(b) { return String(b.text ?? b.msg ?? b.message ?? b.content ?? b.transcription ?? b.caption ?? "").trim(); }
+function nomeDe(b) { return String(b.displayName ?? b.userName ?? b.speakerName ?? b.name ?? nomes.get(b.userId ?? b.speakerId ?? b.userID) ?? "").trim(); }
+function legendaSdk(bruto) {
+  const lista = Array.isArray(bruto) ? bruto : [bruto];
+  for (const b of lista) {
+    if (!b || typeof b !== "object") continue;
+    const texto = textoDe(b); if (!texto) continue;
+    fonteSdk = true;
+    const chave = b.msgId ?? b.msgID ?? b.messageId ?? b.id ?? null;
+    registrarFala(nomeDe(b) || falante, texto, chave != null ? "sdk:" + chave : null);
+  }
+}
+function legendaTela(linhas) {
+  if (fonteSdk) return;
+  for (const l of linhas) { if (l.texto) registrarFala(l.nome || falante, l.texto.replace(/\s+/g, " ").trim(), null); }
+}
+const vistos = new Set();
+function registrarFala(quem, texto, chave) {
+  viva();
+  const falas = S.itens.filter(i => i.tipo === "fala");
+  let alvo = null;
+  if (chave) {
+    // O Zoom identifica cada fala: a versão mais recente substitui a anterior.
+    alvo = falas.slice(-30).find(i => i.chave === chave);
+  } else {
+    const marca = quem + "\u0001" + texto;
+    if (vistos.has(marca)) return;
+    vistos.add(marca);
+    // A legenda cresce enquanto a pessoa fala: a nova versão de uma mesma fala substitui a anterior.
+    const agora = agoraMs();
+    alvo = falas.slice(-4).reverse().find(i => !i.chave && agora - (i.u ?? i.t) < 20000 && (!quem || !i.quem || i.quem === quem)
+      && (texto.startsWith(i.texto) || i.texto.startsWith(texto)));
+  }
+  if (alvo) {
+    alvo.u = agoraMs();
+    if (texto !== alvo.texto && (chave || texto.length >= alvo.texto.length)) { alvo.texto = texto; if (quem && !alvo.quem) alvo.quem = quem; desenhar(alvo); gravarLogo(); }
+    return;
+  }
+  incluir({ tipo: "fala", quem: quem || "", texto, chave: chave || undefined, dest: false });
+}
+function viva() {
+  if ($("s-estado").classList.contains("viva")) return;
+  $("s-estado").classList.add("viva"); $("s-estado-txt").textContent = "Transcrevendo"; $("dica").hidden = true;
+}
+
+// ---- marcações e anotações
+function marcarMomento() {
+  if (!S || !aoVivo) return;
+  const janela = (C.janelaDestaque || 30) * 1000, agora = agoraMs();
+  let n = 0;
+  for (const i of S.itens) if (i.tipo === "fala" && !i.dest && i.t >= agora - janela) { i.dest = true; desenhar(i); n++; }
+  const nota = $("texto").value.trim();
+  incluir({ tipo: "marco", texto: nota || "", t: agora }); if (nota) $("texto").value = "";
+  const b = $("b-marcar"); b.classList.add("feito");
+  $("t-marcar").textContent = n ? `Marcado: ${n} ${n === 1 ? "fala destacada" : "falas destacadas"}` : "Momento marcado";
+  setTimeout(() => { b.classList.remove("feito"); $("t-marcar").textContent = "Marcar este momento"; }, 1800);
+}
+function anotar() {
+  if (!S) return;
+  const texto = $("texto").value.trim(); if (!texto) { $("texto").focus(); return; }
+  incluir({ tipo: "nota", etq: etqAtual, texto, t: aoVivo ? agoraMs() : (S.fim || Date.now()) - S.inicio });
+  $("texto").value = ""; $("texto").focus();
+}
+$("b-marcar").addEventListener("click", marcarMomento);
+$("b-anotar").addEventListener("click", anotar);
+$("texto").addEventListener("keydown", ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); anotar(); } });
+document.addEventListener("keydown", ev => { if (ev.altKey && ev.key.toLowerCase() === "m") { ev.preventDefault(); marcarMomento(); } });
+document.querySelectorAll(".chips button").forEach(b => b.addEventListener("click", () => {
+  etqAtual = b.dataset.etq;
+  document.querySelectorAll(".chips button").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+  $("texto").focus();
+}));
+$("fluxo").addEventListener("click", ev => {
+  const el = ev.target.closest(".item"); if (!el || !S) return;
+  const item = S.itens.find(i => String(i.id) === el.dataset.id); if (!item) return;
+  if (ev.target.closest(".tirar")) { S.itens = S.itens.filter(i => i !== item); el.remove(); contadores(); gravarLogo(); return; }
+  if (item.tipo === "fala") { item.dest = !item.dest; desenhar(item); contadores(); gravarLogo(); }
+});
+$("fluxo").addEventListener("scroll", () => {
+  const f = $("fluxo"); colado = f.scrollHeight - f.scrollTop - f.clientHeight < 60; $("b-agora").hidden = colado;
+});
+$("b-agora").addEventListener("click", () => { $("fluxo").scrollTop = $("fluxo").scrollHeight; });
+document.querySelectorAll(".abas button").forEach(b => b.addEventListener("click", () => {
+  abaAtual = b.dataset.aba;
+  document.querySelectorAll(".abas button").forEach(o => o.setAttribute("aria-selected", String(o === b)));
+  $("v-fluxo").hidden = abaAtual === "doc"; $("v-doc").hidden = abaAtual !== "doc"; $("mesa").hidden = abaAtual === "doc";
+  if (S && abaAtual !== "doc") { S.itens.forEach(i => { const el = elementoDe(i); if (el) filtrar(el, i); }); if (colado) $("fluxo").scrollTop = $("fluxo").scrollHeight; }
+}));
+$("b-painel").addEventListener("click", () => {
+  const sem = $("sala").classList.toggle("sem-painel");
+  $("b-painel").textContent = sem ? "Mostrar o painel" : "Ocultar o painel"; $("b-painel").setAttribute("aria-pressed", String(!sem));
+});
+$("b-convite").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(S.convite); $("b-convite").textContent = "Convite copiado"; setTimeout(() => $("b-convite").textContent = "Copiar o convite", 1800); } catch (e) {}
+});
+$("b-voltar").addEventListener("click", () => { gravarSessao(); location.href = AQUI; });
+
+// ================================================================ abertura da reunião
+function iniciarRelogio() { clearInterval(relogioId); relogioId = setInterval(() => { if (aoVivo) $("s-relogio").textContent = relativo(agoraMs()); }, 1000); }
+async function acompanhar() {
+  await pasta.garantir();
+  S = novaSessao($("ac-titulo").value.trim() || "Reunião", "", ""); S.modo = "acompanhamento"; aoVivo = true;
+  $("ante").hidden = true; $("sala").hidden = false;
+  $("quadro").hidden = true; $("painel").style.width = "100%"; $("painel").style.maxWidth = "none"; $("painel").style.borderLeft = "0";
+  $("s-titulo").textContent = S.titulo + " · acompanhamento"; document.title = S.titulo + " · Sala de reuniões";
+  $("s-estado-txt").textContent = "Registrando marcações"; $("s-estado").classList.add("viva");
+  $("b-painel").hidden = true; $("b-encerrar").hidden = false;
+  $("dica").querySelector("div").innerHTML = "<b>Acompanhamento:</b> a reunião segue no aplicativo de origem. Cada marcação e cada anotação recebe o horário exato, e a união com a transcrição da reunião acontece depois.";
+  redesenharTudo(); $("vazio") && ($("vazio").textContent = "Marque os momentos importantes e escreva as anotações. O horário de cada registro fica guardado.");
+  gravarSessao(); iniciarRelogio();
+}
+$("b-acompanhar").addEventListener("click", acompanhar);
+$("b-encerrar").addEventListener("click", () => { $("b-encerrar").hidden = true; encerrar(); });
+async function abrir(mn, senha, titulo, botao) {
+  if (botao) botao.disabled = true;
+  await pasta.garantir();
+  status("st-reunioes", "Preparando a reunião…");
+  try {
+    const d = await servico("/anfitriao/entrar", { access_token: await tokenValido(), meetingNumber: mn, password: senha || "" });
+    S = novaSessao(d.topic || titulo || "Reunião", d.meetingNumber, d.join_url);
+    entrada = { signature: d.signature, sdkKey: d.sdkKey, mn: d.meetingNumber, pwd: d.password, nome: d.nome, email: d.email, zak: d.zak, idioma: C.idioma || "pt-PT", versao: C.versaoSdk || "6.10.0" };
+    $("ante").hidden = true; $("sala").hidden = false;
+    $("s-titulo").textContent = S.titulo + (d.role === 1 ? " · anfitrião" : " · participante");
+    document.title = S.titulo + " · Sala de reuniões";
+    $("b-convite").hidden = !S.convite;
+    $("quadro").src = "zoom.html";
+    status("st-reunioes", "");
+  } catch (e) { status("st-reunioes", e.message, "erro"); if (botao) botao.disabled = false; }
+}
+function reabrir(id) {
+  const s = guarda.ler("reunioes:s:" + id, null); if (!s) return;
+  S = s; aoVivo = false;
+  $("ante").hidden = true; $("sala").hidden = false;
+  $("quadro").hidden = true; $("painel").style.width = "100%"; $("painel").style.maxWidth = "none"; $("painel").style.borderLeft = "0";
+  $("s-titulo").textContent = S.titulo + " · transcrição guardada";
+  $("s-estado").hidden = true; $("dica").hidden = true; $("b-painel").hidden = true; $("b-voltar").hidden = false; $("b-marcar").hidden = true;
+  $("s-relogio").textContent = relativo((S.fim || S.inicio) - S.inicio);
+  redesenharTudo();
+}
+
+window.addEventListener("message", ev => {
+  if (ev.origin !== location.origin || ev.source !== $("quadro").contentWindow) return;
+  const m = ev.data || {}; if (m.sala !== "reunioes" || !S) return;
+  if (m.tipo === "pronto" && entrada) { $("quadro").contentWindow.postMessage({ sala: "reunioes", tipo: "entrar", dados: entrada }, location.origin); entrada = null; }
+  else if (m.tipo === "entrou") {
+    aoVivo = true; S.inicio = Date.now(); gravarSessao(); iniciarRelogio();
+  }
+  else if (m.tipo === "legenda") { if (!aoVivo) return; if (m.fonte === "sdk") { console.debug("[reunioes] legenda", m.evento, m.bruto); legendaSdk(m.bruto); } else legendaTela(m.linhas || []); }
+  else if (m.tipo === "falante") { const l = Array.isArray(m.bruto) ? m.bruto : [m.bruto]; const f = l.find(x => x && x.userName); if (f) { falante = f.userName; if (f.userId != null) nomes.set(f.userId, f.userName); } }
+  else if (m.tipo === "participante") {
+    const l = Array.isArray(m.bruto) ? m.bruto : [m.bruto];
+    for (const p of l) { const nome = p && (p.userName || p.displayName); if (!nome) continue; if (p.userId != null) nomes.set(p.userId, nome); if (!S.participantes.includes(nome)) S.participantes.push(nome); }
+    gravarLogo();
+  }
+  else if (m.tipo === "saiu") encerrar();
+  else if (m.tipo === "erro") {
+    $("sala").hidden = true; $("ante").hidden = false; $("quadro").src = "about:blank"; aoVivo = false;
+    status("st-reunioes", `${m.mensagem || "Não foi possível entrar."}${m.detalhe ? " " + m.detalhe : ""}${m.codigo ? " (código " + m.codigo + ")" : ""}`, "erro");
+    document.querySelectorAll("#c-reunioes button").forEach(b => b.disabled = false);
+  }
+});
+function encerrar() {
+  if (!S || S.fim) return;
+  aoVivo = false; S.fim = Date.now(); clearInterval(relogioId); gravarSessao();
+  $("s-estado").classList.remove("viva"); $("s-estado-txt").textContent = "Reunião encerrada"; $("dica").hidden = true;
+  $("b-voltar").hidden = false; $("b-marcar").hidden = true; $("b-convite").hidden = true;
+  document.querySelector('.abas [data-aba="doc"]').click();
+  gravarNaPasta(true);
+}
+window.addEventListener("beforeunload", ev => { if (S) gravarSessao(); if (aoVivo) { ev.preventDefault(); ev.returnValue = ""; } });
+
+// ================================================================ documento: transcrição com anotações
+function retrato() {
+  const itens = S.itens.slice().sort((a, b) => a.t - b.t || a.id - b.id);
+  const fim = S.fim || Date.now();
+  const hora = t => fmtHora.format(new Date(S.inicio + t));
+  const destaques = [];
+  itens.forEach((i, k) => {
+    if (i.tipo === "nota") destaques.push({ ...i, rotulo: ETQ[i.etq] || "Anotação" });
+    else if (i.tipo === "marco") {
+      const janela = (C.janelaDestaque || 30) * 1000;
+      const contexto = itens.filter(f => f.tipo === "fala" && f.t <= i.t && f.t >= i.t - janela).map(f => (f.quem ? f.quem + ": " : "") + f.texto);
+      destaques.push({ ...i, rotulo: ETQ.importante, contexto });
+    } else if (i.dest) {
+      const coberto = itens.some(m => m.tipo === "marco" && i.t <= m.t && i.t >= m.t - (C.janelaDestaque || 30) * 1000);
+      if (!coberto) destaques.push({ ...i, rotulo: "Fala destacada" });
+    }
+  });
+  return {
+    titulo: S.titulo, data: fmtData.format(new Date(S.inicio)), inicio: fmtHora.format(new Date(S.inicio)), fim: fmtHora.format(new Date(fim)),
+    duracao: relativo(fim - S.inicio), anfitriao: S.anfitriao, participantes: S.participantes, itens, destaques, hora,
+    arquivo: "Transcricao com anotacoes - " + S.titulo.replace(/[\\/:*?"<>|]+/g, " ").trim().slice(0, 70) + " - " + new Date(S.inicio).toISOString().slice(0, 10)
+  };
+}
+function baixar(nome, blob) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+}
+
+function documentoHtml() {
+  const R = retrato(), raiz = new URL("../assets/logo-gt.png", location.href).href;
+  const linha = i => {
+    if (i.tipo === "fala") return `<div class="l fala${i.dest ? " dest" : ""}"><span class="t">${relativo(i.t)}</span><div><b>${esc(i.quem || "Participante")}</b>${i.dest ? ' <span class="s">★ destaque</span>' : ""}<p>${esc(i.texto)}</p></div></div>`;
+    if (i.tipo === "nota") return `<div class="l nota"><span class="t">${relativo(i.t)}</span><div><span class="e">${esc(ETQ[i.etq] || "Anotação")}</span><p>${esc(i.texto)}</p></div></div>`;
+    return `<div class="l marco"><span class="t">${relativo(i.t)}</span><div><span class="e">★ ${esc(ETQ.importante)}</span>${i.texto ? `<p>${esc(i.texto)}</p>` : ""}</div></div>`;
+  };
+  const dest = R.destaques.length ? R.destaques.map(d => `<div class="d"><div class="dh"><span class="e">${esc(d.rotulo)}</span><span class="t">${relativo(d.t)} · ${esc(R.hora(d.t))}</span></div>
+    ${d.tipo === "fala" ? `<p><b>${esc(d.quem || "Participante")}:</b> ${esc(d.texto)}</p>` : (d.texto ? `<p>${esc(d.texto)}</p>` : "")}
+    ${d.contexto && d.contexto.length ? `<div class="c"><span>O que estava sendo dito</span>${d.contexto.map(c => `<p>${esc(c)}</p>`).join("")}</div>` : ""}</div>`).join("") : '<p class="nada">Nenhum destaque ou anotação nesta reunião.</p>';
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(R.arquivo)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital@1&display=swap" rel="stylesheet">
+<style>
+@page{size:A4;margin:16mm 18mm 18mm}
+@page :first{margin:0}
+html{background:#F6F2EC}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;font:11.5pt/1.55 Poppins,Arial,sans-serif;color:#2A211C;background:#F6F2EC}
+.capa{background:#1B1512;color:#FBEEE5;padding:22mm 18mm;height:297mm;display:flex;flex-direction:column;border-top:3mm solid #C9A24D;border-bottom:3mm solid #C9A24D;break-after:page}
+.capa img{height:22mm;align-self:flex-start}
+.capa .o{font-size:10pt;letter-spacing:3px;font-weight:700;color:#E5662C;text-transform:uppercase;margin-top:42mm}
+.capa h1{font-size:30pt;line-height:1.12;margin:5mm 0 8mm;font-weight:700}
+.capa h1 em{font-style:normal;color:#E5662C}
+.capa .r{width:26mm;height:1.2mm;background:#E5662C;margin-bottom:8mm}
+.capa dl{display:grid;grid-template-columns:38mm 1fr;gap:2.5mm 4mm;margin:0;font-size:11.5pt}
+.capa dt{color:#C9A24D;font-weight:600}.capa dd{margin:0;color:#E8DED4}
+.capa .p{margin-top:auto;font-size:9.5pt;color:#BFB3A3;letter-spacing:1px}
+.eye{font-size:9.5pt;letter-spacing:2.6px;font-weight:700;color:#E5662C;text-transform:uppercase;display:flex;gap:4mm;align-items:center;margin:0 0 3mm}
+.eye::after{content:"";flex:1;height:.3mm;background:#E2D9CD}
+h2{font-size:21pt;line-height:1.15;margin:0 0 6mm}h2 em{font-style:normal;color:#E5662C}
+section{break-before:page}section.primeira{break-before:auto}
+.d{background:#fff;border:.3mm solid #E2D9CD;border-left:1.2mm solid #E5662C;border-radius:2mm;padding:4mm 5mm;margin-bottom:4mm;break-inside:avoid}
+.dh{display:flex;justify-content:space-between;gap:4mm;align-items:center;margin-bottom:1.5mm}
+.e{font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;background:#FBEEE5;color:#B04A1C;border-radius:1mm;padding:.6mm 2mm}
+.t{font-size:9.5pt;color:#8D8377;font-variant-numeric:tabular-nums}
+.d p{margin:1mm 0 0}.c{margin-top:3mm;padding-top:2.5mm;border-top:.3mm solid #EEE7DD;color:#4A3F37;font-size:10.5pt}
+.c span{display:block;font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;color:#8D8377;margin-bottom:1mm}
+.l{display:grid;grid-template-columns:16mm 1fr;gap:3mm;padding:2mm 3mm;border-left:1mm solid transparent;break-inside:avoid}
+.l p{margin:0;white-space:pre-wrap}.l b{color:#2F6B6F;font-size:10.5pt}.s{font-size:9pt;color:#B5781E;font-weight:700}
+.l.dest{background:#FFF3D6;border-left-color:#B5781E}
+.l.nota{background:#fff;border:.3mm solid #E2D9CD;border-left:1mm solid #E5662C;border-radius:1.5mm;margin:1.5mm 0}
+.l.marco{background:#1B1512;border-left-color:#C9A24D;border-radius:1.5mm;margin:1.5mm 0}
+.l.marco p{color:#FBEEE5;font-weight:600}.l.marco .t{color:#BFB3A3}.l.marco .e{background:#C9A24D;color:#1B1512}
+.nada{color:#8D8377}
+.fim{margin-top:10mm;padding-top:4mm;border-top:.6mm solid #E5662C;font:italic 12pt Lora,Georgia,serif;color:#4A3F37}
+.bar{position:fixed;top:0;left:0;right:0;background:#1B1512;color:#FBEEE5;padding:10px 18px;display:flex;gap:14px;align-items:center;justify-content:space-between;font-size:14px;z-index:9}
+.bar button{font:600 14px Poppins,Arial,sans-serif;border:0;border-radius:24px;padding:9px 20px;background:#E5662C;color:#fff;cursor:pointer}
+@media screen{html{background:#8D8377}body{padding:70px 0 40px;background:#8D8377}.folha{max-width:210mm;margin:0 auto;padding:0 18mm 16mm;background:#F6F2EC;box-shadow:0 2px 22px rgba(0,0,0,.18)}.capa{margin:0 -18mm 12mm}}
+@media print{.bar{display:none}}
+</style></head><body>
+<div class="bar"><span>Transcrição com anotações · na janela de impressão, escolha <b>Salvar como PDF</b></span><button onclick="print()">Salvar em PDF</button></div>
+<div class="folha">
+<div class="capa"><img src="${raiz}" alt="Gino Terentim · Rethinking Learning">
+ <div class="o">Transcrição com anotações</div><h1>${esc(R.titulo)}</h1><div class="r"></div>
+ <dl><dt>Data</dt><dd>${esc(R.data)}</dd><dt>Horário</dt><dd>${esc(R.inicio)} às ${esc(R.fim)} (${esc(R.duracao)})</dd>
+ ${R.anfitriao ? `<dt>Condução</dt><dd>${esc(R.anfitriao)}</dd>` : ""}${R.participantes.length ? `<dt>Participantes</dt><dd>${esc(R.participantes.join(", "))}</dd>` : ""}
+ <dt>Registros</dt><dd>${R.itens.filter(i => i.tipo === "fala").length} falas · ${R.destaques.length} destaques e anotações</dd></dl>
+ <div class="p">GINO TERENTIM · RETHINKING LEARNING</div></div>
+<section class="primeira"><div class="eye">01 · Destaques e anotações</div><h2>Os momentos marcados <em>durante a reunião</em></h2>${dest}</section>
+<section><div class="eye">02 · Transcrição integral</div><h2>A conversa, <em>na ordem em que aconteceu</em></h2>
+${R.itens.length ? R.itens.map(linha).join("") : '<p class="nada">A reunião não teve falas transcritas.</p>'}
+<div class="fim">Registro gerado na sala de reuniões de Gino Terentim · Rethinking Learning.</div></section>
+</div></body></html>`;
+}
+$("x-pdf").addEventListener("click", () => {
+  const j = window.open("", "_blank");
+  if (!j) { status("st-doc", "O navegador bloqueou a nova aba. Libere as janelas desta página e clique de novo.", "erro"); return; }
+  j.document.open(); j.document.write(documentoHtml()); j.document.close();
+  status("st-doc", "Documento aberto em nova aba.", "ok");
+});
+function documentoMd() {
+  const R = retrato(), L = [];
+  L.push(`# Transcrição com anotações: ${R.titulo}`, "", `- Data: ${R.data}`, `- Horário: ${R.inicio} às ${R.fim} (${R.duracao})`);
+  if (R.anfitriao) L.push(`- Condução: ${R.anfitriao}`);
+  if (R.participantes.length) L.push(`- Participantes: ${R.participantes.join(", ")}`);
+  if (S.modo === "acompanhamento") L.push("- Modo: acompanhamento de reunião conduzida em outro aplicativo (marcações e anotações, sem falas)");
+  L.push("", "## Destaques e anotações", "");
+  if (!R.destaques.length) L.push("Nenhum destaque ou anotação nesta reunião.", "");
+  for (const d of R.destaques) {
+    L.push(`### [${relativo(d.t)} · ${R.hora(d.t)}] ${d.rotulo}`);
+    if (d.tipo === "fala") L.push(`**${d.quem || "Participante"}:** ${d.texto}`); else if (d.texto) L.push(d.texto);
+    if (d.contexto && d.contexto.length) L.push("", "O que estava sendo dito:", ...d.contexto.map(c => `> ${c}`));
+    L.push("");
+  }
+  L.push("## Transcrição integral", "");
+  for (const i of R.itens) {
+    if (i.tipo === "fala") L.push(`**[${relativo(i.t)}] ${i.quem || "Participante"}:**${i.dest ? " ★" : ""} ${i.texto}`, "");
+    else if (i.tipo === "nota") L.push(`> **[${relativo(i.t)}] ${ETQ[i.etq] || "Anotação"}:** ${i.texto}`, "");
+    else L.push(`> **[${relativo(i.t)}] ★ ${ETQ.importante}**${i.texto ? ": " + i.texto : ""}`, "");
+  }
+  return L.join("\n");
+}
+$("x-md").addEventListener("click", () => baixar(retrato().arquivo + ".md", new Blob([documentoMd()], { type: "text/markdown;charset=utf-8" })));
+$("x-json").addEventListener("click", () => baixar(retrato().arquivo + ".json", new Blob([JSON.stringify(S, null, 1)], { type: "application/json" })));
+async function documentoDocx() {
+  const D = window.docx; if (!D) return null;
+  const R = retrato(), F = "Poppins";
+  const run = (text, o = {}) => new D.TextRun({ text, font: F, size: 22, ...o });
+  const par = (filhos, o = {}) => new D.Paragraph({ children: [].concat(filhos), spacing: { after: 120 }, ...o });
+  const eyebrow = t => par(run(t.toUpperCase(), { bold: true, color: "E5662C", size: 18, characterSpacing: 40 }), { spacing: { before: 360, after: 80 }, border: { bottom: { style: D.BorderStyle.SINGLE, size: 4, color: "E2D9CD", space: 4 } } });
+  const titulo = (a, b) => par([run(a, { bold: true, size: 40, color: "2A211C" }), run(b, { bold: true, size: 40, color: "E5662C" })], { spacing: { after: 240 } });
+  const sombra = cor => ({ type: D.ShadingType.CLEAR, color: "auto", fill: cor });
+  const blocos = [
+    par(run("GINO TERENTIM · RETHINKING LEARNING", { bold: true, color: "C9A24D", size: 18, characterSpacing: 40 })),
+    par(run("TRANSCRIÇÃO COM ANOTAÇÕES", { bold: true, color: "E5662C", size: 20, characterSpacing: 40 }), { spacing: { before: 600, after: 80 } }),
+    par(run(R.titulo, { bold: true, size: 56, color: "2A211C" }), { spacing: { after: 240 } }),
+    par([run("Data: ", { bold: true }), run(R.data)]),
+    par([run("Horário: ", { bold: true }), run(`${R.inicio} às ${R.fim} (${R.duracao})`)])
+  ];
+  if (R.anfitriao) blocos.push(par([run("Condução: ", { bold: true }), run(R.anfitriao)]));
+  if (R.participantes.length) blocos.push(par([run("Participantes: ", { bold: true }), run(R.participantes.join(", "))]));
+  blocos.push(eyebrow("01 · Destaques e anotações"), titulo("Os momentos marcados ", "durante a reunião"));
+  if (!R.destaques.length) blocos.push(par(run("Nenhum destaque ou anotação nesta reunião.", { color: "8D8377" })));
+  for (const d of R.destaques) {
+    blocos.push(par([run(d.rotulo.toUpperCase() + "  ", { bold: true, color: "B04A1C", size: 18 }), run(`${relativo(d.t)} · ${R.hora(d.t)}`, { color: "8D8377", size: 18 })], { spacing: { before: 200, after: 40 }, keepNext: true }));
+    if (d.tipo === "fala") blocos.push(par([run((d.quem || "Participante") + ": ", { bold: true }), run(d.texto)])); else if (d.texto) blocos.push(par(run(d.texto, { bold: d.tipo === "marco" })));
+    if (d.contexto && d.contexto.length) { blocos.push(par(run("O QUE ESTAVA SENDO DITO", { bold: true, color: "8D8377", size: 16 }), { spacing: { after: 40 }, indent: { left: 360 } })); d.contexto.forEach(c => blocos.push(par(run(c, { color: "4A3F37", size: 20 }), { indent: { left: 360 }, spacing: { after: 60 } }))); }
+  }
+  blocos.push(new D.Paragraph({ children: [new D.PageBreak()] }), eyebrow("02 · Transcrição integral"), titulo("A conversa, ", "na ordem em que aconteceu"));
+  for (const i of R.itens) {
+    const t = run(`[${relativo(i.t)}]  `, { color: "8D8377", size: 18 });
+    if (i.tipo === "fala") blocos.push(par([t, run((i.quem || "Participante") + (i.dest ? " ★" : "") + ": ", { bold: true, color: "2F6B6F" }), run(i.texto)], i.dest ? { shading: sombra("FFF3D6") } : {}));
+    else if (i.tipo === "nota") blocos.push(par([t, run((ETQ[i.etq] || "Anotação").toUpperCase() + ": ", { bold: true, color: "B04A1C" }), run(i.texto)], { shading: sombra("FBEEE5"), indent: { left: 240 } }));
+    else blocos.push(par([t, run("★ " + ETQ.importante.toUpperCase() + (i.texto ? ": " : ""), { bold: true, color: "B5781E" }), run(i.texto || "", { bold: true })], { shading: sombra("F3E4D8"), indent: { left: 240 } }));
+  }
+  const doc = new D.Document({ creator: "Gino Terentim · Rethinking Learning", title: R.arquivo, styles: { default: { document: { run: { font: F, size: 22 } } } },
+    sections: [{ properties: { page: { margin: { top: 1020, bottom: 1020, left: 1020, right: 1020 } } }, children: blocos }] });
+  return D.Packer.toBlob(doc);
+}
+$("x-docx").addEventListener("click", async () => {
+  const w = await documentoDocx();
+  if (!w) { status("st-doc", "O gerador de Word ainda está carregando. Tente em alguns segundos.", "erro"); return; }
+  baixar(retrato().arquivo + ".docx", w);
+});
+
+// ================================================================ partida
+(async () => {
+  listarGuardadas(); mostrarPasta();
+  const chegou = await retornoDoZoom();
+  const z = sessaoZoom.ler();
+  if (z && (chegou || z.expira > Date.now() || z.refresh_token)) mostrarReunioes();
+})();
+
+// Apoio aos testes automáticos da página.
+window.__reunioes = { get S() { return S; }, registrarFala, legendaSdk, legendaTela, iniciarTeste(t) { S = novaSessao(t || "Teste", "0", ""); aoVivo = true; $("ante").hidden = true; $("sala").hidden = false; redesenharTudo(); } };
+}
+</script>
+</body>
+</html>

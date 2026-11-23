@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Zoom · Sala de reuniões</title>
+<style>
+html,body{margin:0;height:100%;background:#1B1512;color:#FBEEE5;font:15px/1.5 Poppins,"Segoe UI",Arial,sans-serif}
+#espera{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+#espera b{display:block;font-size:18px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div id="espera"><div><b id="e-t">Preparando o Zoom</b><span id="e-s">A reunião abre neste quadro.</span></div></div>
+<script>
+// Quadro do Zoom (Meeting SDK, client view). Recebe os dados de entrada da página principal por postMessage,
+// entra na reunião e devolve à página principal as legendas ao vivo, quem fala e quem entra ou sai.
+{
+const PAI = window.parent;
+const ORIGEM = location.origin;
+const enviar = (tipo, dados = {}) => { try { PAI.postMessage({ sala: "reunioes", tipo, ...dados }, ORIGEM); } catch (e) {} };
+const q = new URLSearchParams(location.search);
+
+if (q.get("fim")) {
+  document.getElementById("e-t").textContent = "Reunião encerrada";
+  document.getElementById("e-s").textContent = "A transcrição com anotações está no painel ao lado.";
+  enviar("saiu");
+} else {
+  enviar("pronto");
+}
+
+function carregar(src) {
+  return new Promise((ok, falha) => {
+    const s = document.createElement("script");
+    s.src = src; s.onload = ok; s.onerror = () => falha(new Error("Falha ao carregar " + src));
+    document.head.appendChild(s);
+  });
+}
+async function carregarZoom(v) {
+  if (window.ZoomMtg) return;
+  const base = `https://source.zoom.us/${v}/lib/vendor/`;
+  for (const f of ["react.min.js", "react-dom.min.js", "redux.min.js", "redux-thunk.min.js", "lodash.min.js"]) await carregar(base + f);
+  await carregar(`https://source.zoom.us/zoom-meeting-${v}.min.js`);
+}
+
+let iniciado = false;
+window.addEventListener("message", async ev => {
+  if (ev.origin !== ORIGEM || ev.source !== PAI) return;
+  const m = ev.data || {};
+  if (m.sala !== "reunioes") return;
+  if (m.tipo === "entrar" && !iniciado) { iniciado = true; entrar(m.dados).catch(e => enviar("erro", { mensagem: e.message || String(e) })); }
+});
+
+async function entrar(d) {
+  await carregarZoom(d.versao);
+  const Z = window.ZoomMtg;
+  Z.setZoomJSLib(`https://source.zoom.us/${d.versao}/lib`, "/av");
+  Z.preLoadWasm();
+  Z.prepareWebSDK();
+  try { await Promise.resolve(Z.i18n.load(d.idioma)); await Promise.resolve(Z.i18n.reload(d.idioma)); } catch (e) {}
+  document.getElementById("espera").style.display = "none";
+  const saida = new URL(location.href); saida.search = "?fim=1";
+  Z.init({
+    leaveUrl: saida.toString(),
+    patchJsMedia: true,
+    leaveOnPageUnload: true,
+    success: () => {
+      ouvir(Z);
+      const dados = {
+        signature: d.signature, sdkKey: d.sdkKey, meetingNumber: d.mn, passWord: d.pwd || "",
+        userName: d.nome, userEmail: d.email || "",
+        success: () => { enviar("entrou"); observarLegendas(); },
+        error: e => enviar("erro", { mensagem: "O Zoom recusou a entrada.", codigo: e && (e.errorCode ?? e.code), detalhe: e && (e.errorMessage || e.reason || e.message) })
+      };
+      if (d.zak) dados.zak = d.zak;
+      Z.join(dados);
+    },
+    error: e => enviar("erro", { mensagem: "O Zoom não iniciou.", codigo: e && (e.errorCode ?? e.code), detalhe: e && (e.errorMessage || e.message) })
+  });
+}
+
+// ---------------------------------------------------------------- eventos do SDK
+function ouvir(Z) {
+  const seguro = (nome, fn) => { try { Z.inMeetingServiceListener(nome, fn); } catch (e) {} };
+  // Legendas e transcrição ao vivo: chegam depois que as legendas são ligadas na reunião.
+  for (const nome of ["onReceiveTranscriptionMsg", "onReceiveTranslateMsg"]) {
+    seguro(nome, dados => enviar("legenda", { fonte: "sdk", evento: nome, bruto: copia(dados) }));
+  }
+  seguro("onActiveSpeaker", dados => enviar("falante", { bruto: copia(dados) }));
+  seguro("onUserJoin", dados => enviar("participante", { acao: "entrou", bruto: copia(dados) }));
+  seguro("onUserLeave", dados => enviar("participante", { acao: "saiu", bruto: copia(dados) }));
+  seguro("onMeetingStatus", dados => enviar("estado", { bruto: copia(dados) }));
+}
+function copia(o) { try { return JSON.parse(JSON.stringify(o)); } catch (e) { return String(o); } }
+
+// ---------------------------------------------------------------- leitura das legendas na tela (reserva)
+// Quando o SDK não entrega o texto por evento, as legendas exibidas pelo próprio Zoom são lidas da tela.
+const SELETORES_LINHA = [
+  '[class*="lt-full-transcript__item"]',          // painel "Transcrição completa"
+  '[class*="live-transcription-subtitle__item"]', // legenda sobre o vídeo
+  '[class*="subtitle__item"]'
+];
+let ultimoRetrato = "";
+function observarLegendas() {
+  setInterval(() => {
+    const linhas = [];
+    for (const sel of SELETORES_LINHA) {
+      document.querySelectorAll(sel).forEach((el, i) => {
+        const texto = (el.innerText || "").replace(/\s+\n/g, "\n").trim();
+        if (!texto) return;
+        const nomeEl = el.querySelector('[class*="display-name"],[class*="name"]');
+        const msgEl = el.querySelector('[class*="message"],[class*="text"],[class*="content"]');
+        const img = el.querySelector("img[alt]");
+        linhas.push({
+          seletor: sel, i,
+          nome: (nomeEl && nomeEl.innerText.trim()) || (img && img.alt) || "",
+          texto: (msgEl && msgEl.innerText.trim()) || texto
+        });
+      });
+      if (linhas.length) break;
+    }
+    const retrato = JSON.stringify(linhas);
+    if (linhas.length && retrato !== ultimoRetrato) { ultimoRetrato = retrato; enviar("legenda", { fonte: "tela", linhas }); }
+  }, 600);
+}
+}
+</script>
+</body>
+</html>

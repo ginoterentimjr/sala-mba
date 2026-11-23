@@ -24,3 +24,16 @@ Nome e e-mail do aluno logado vão no fragmento do endereço, que não é enviad
 - `config.js`: endereço do serviço de assinatura, Client ID, marca padrão e reunião padrão.
 - `assets/`: logotipo e ícone.
 - `worker/assinatura-zoom.js`: código do Cloudflare Worker `sala-mba-assinatura`, que gera a assinatura com papel de participante. O Client Secret fica apenas nas variáveis do Worker, nunca neste repositório.
+
+## Sala de reuniões (`reunioes/`)
+
+https://ginoterentimjr.github.io/sala-mba/reunioes/
+
+Página de Gino Terentim · Rethinking Learning para conduzir reuniões no Zoom dentro do navegador, com papel de anfitrião, transcrição ao vivo, marcação de momentos importantes, anotações no minuto da conversa e o documento "Transcrição com anotações" (PDF, Word, texto e dados).
+
+- `reunioes/index.html`: antessala (entrada com a conta do Zoom, agenda, reunião imediata, acompanhamento de reunião em outro aplicativo), painel de transcrição e anotações, e geração do documento.
+- `reunioes/zoom.html`: quadro com o Zoom Meeting SDK (client view), que devolve as legendas ao painel.
+- `reunioes/config.js`: endereço do serviço, Client ID e versão do SDK.
+- `worker/assinatura-zoom.js`: as rotas `/anfitriao/*` conferem a identidade no Zoom (OAuth) e só atendem as contas listadas na variável `ANFITRIOES`.
+
+No app do Zoom ("Pionira Live"), o endereço acima precisa estar em Redirect URL e na lista de endereços permitidos, com os escopos de usuário, ZAK e reuniões.
