@@ -786,8 +786,15 @@ function retrato() {
       if (!coberto) destaques.push({ ...i, rotulo: "Fala destacada" });
     }
   });
+  // Na transcrição integral, as frases seguidas de uma mesma pessoa formam um só parágrafo.
+  const corrido = [];
+  for (const i of itens) {
+    const u = corrido[corrido.length - 1];
+    if (i.tipo === "fala" && u && u.tipo === "fala" && u.quem === i.quem && !!u.dest === !!i.dest && i.t - u.ate < 15000 && u.texto.length < 900) { u.texto += " " + i.texto; u.ate = i.t; }
+    else corrido.push(i.tipo === "fala" ? { ...i, ate: i.t } : i);
+  }
   return {
-    titulo: S.titulo, data: fmtData.format(new Date(S.inicio)), inicio: fmtHora.format(new Date(S.inicio)), fim: fmtHora.format(new Date(fim)),
+    corrido, titulo: S.titulo, data: fmtData.format(new Date(S.inicio)), inicio: fmtHora.format(new Date(S.inicio)), fim: fmtHora.format(new Date(fim)),
     duracao: relativo(fim - S.inicio), duracaoMs: Math.max(1000, fim - S.inicio), anfitriao: S.anfitriao, participantes: S.participantes, itens, destaques, hora,
     acoes: itens.filter(i => i.tipo === "nota" && i.etq === "acao"), decisoes: itens.filter(i => i.tipo === "nota" && i.etq === "decisao"),
     duvidas: itens.filter(i => i.tipo === "nota" && i.etq === "duvida"), pauta: S.pauta || [],
@@ -921,7 +928,7 @@ ${R.pauta.length ? `<section><div class="eye">${num()} · Pauta</div><h2>Itens t
  ${R.pauta.map(i => `<div class="pp${i.feito ? " ok" : ""}"><span class="ck">${i.feito ? '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>' : ""}</span><span>${esc(i.texto)}</span><span class="st">${i.feito ? "Tratado" + (i.t != null ? " · " + relativo(i.t) : "") : "Pendente"}</span></div>`).join("")}</section>` : ""}
 <section><div class="eye">${num()} · Destaques e anotações</div><h2>Os momentos marcados <em>durante a reunião</em></h2>${dest}</section>
 <section><div class="eye">${num()} · Transcrição integral</div><h2>A conversa, <em>na ordem em que aconteceu</em></h2>
-${R.itens.length ? R.itens.map(linha).join("") : '<p class="nada">A reunião não teve falas transcritas.</p>'}
+${R.corrido.length ? R.corrido.map(linha).join("") : '<p class="nada">A reunião não teve falas transcritas.</p>'}
 <div class="fim">Registro gerado na sala de reuniões de Gino Terentim · Rethinking Learning.</div></section>
 </div></body></html>`;
 }
@@ -951,7 +958,7 @@ function documentoMd() {
     L.push("");
   }
   L.push("## Transcrição integral", "");
-  for (const i of R.itens) {
+  for (const i of R.corrido) {
     if (i.tipo === "fala") L.push(`**[${relativo(i.t)}] ${i.quem || "Participante"}:**${i.dest ? " ★" : ""} ${i.texto}`, "");
     else if (i.tipo === "nota") L.push(`> **[${relativo(i.t)}] ${ETQ[i.etq] || "Anotação"}:** ${i.texto}${i.resp || i.prazo ? ` (responsável: ${i.resp || "a definir"}; prazo: ${i.prazo || "a definir"})` : ""}`, "");
     else L.push(`> **[${relativo(i.t)}] ★ ${ETQ.importante}**${i.texto ? ": " + i.texto : ""}`, "");
@@ -998,7 +1005,7 @@ async function documentoDocx() {
     if (d.contexto && d.contexto.length) { blocos.push(par(run("O QUE ESTAVA SENDO DITO", { bold: true, color: "8D8377", size: 16 }), { spacing: { after: 40 }, indent: { left: 360 } })); d.contexto.forEach(c => blocos.push(par(run(c, { color: "4A3F37", size: 20 }), { indent: { left: 360 }, spacing: { after: 60 } }))); }
   }
   blocos.push(new D.Paragraph({ children: [new D.PageBreak()] }), eyebrow(num() + " · Transcrição integral"), titulo("A conversa, ", "na ordem em que aconteceu"));
-  for (const i of R.itens) {
+  for (const i of R.corrido) {
     const t = run(`[${relativo(i.t)}]  `, { color: "8D8377", size: 18 });
     if (i.tipo === "fala") blocos.push(par([t, run((i.quem || "Participante") + (i.dest ? " ★" : "") + ": ", { bold: true, color: "2F6B6F" }), run(i.texto)], i.dest ? { shading: sombra("FFF3D6") } : {}));
     else if (i.tipo === "nota") blocos.push(par([t, run((ETQ[i.etq] || "Anotação").toUpperCase() + ": ", { bold: true, color: "B04A1C" }), run(i.texto + (i.resp || i.prazo ? `  (responsável: ${i.resp || "a definir"}; prazo: ${i.prazo || "a definir"})` : ""))], { shading: sombra("FBEEE5"), indent: { left: 240 } }));
