@@ -49,6 +49,12 @@ window.addEventListener("message", async ev => {
   if (ev.origin !== ORIGEM || ev.source !== PAI) return;
   const m = ev.data || {};
   if (m.sala !== "reunioes") return;
+  if (m.tipo === "chat" && window.ZoomMtg && m.mensagem) {
+    // Aviso de transcrição a todos os participantes, enviado uma vez, pelo anfitrião.
+    try { window.ZoomMtg.sendChat({ message: String(m.mensagem).slice(0, 900), userId: 0, success: () => enviar("chat-ok"), error: e => enviar("chat-erro", { detalhe: copia(e) }) }); }
+    catch (e) { enviar("chat-erro", { detalhe: String(e) }); }
+    return;
+  }
   if (m.tipo === "entrar" && !iniciado) { iniciado = true; entrar(m.dados).catch(e => enviar("erro", { mensagem: e.message || String(e) })); }
 });
 

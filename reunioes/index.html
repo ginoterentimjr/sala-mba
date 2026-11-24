@@ -131,6 +131,21 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .numeros div{background:#fff;border:1px solid var(--filete);border-radius:8px;padding:10px 12px}
 .numeros b{display:block;font-size:22px;color:var(--terra);line-height:1.1}
 .numeros span{font-size:11px;color:var(--meta);letter-spacing:1px;text-transform:uppercase}
+.dupla{display:grid;grid-template-columns:1.3fr 1fr;gap:8px;margin-bottom:8px}
+.dupla input{font-size:13px;padding:8px 10px}
+.item .rp{font-size:12px;color:var(--corpo);margin-top:3px}
+.item .rp b{color:var(--tinta)}
+.pauta{flex:1;overflow-y:auto;padding:14px 16px}
+.pi{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 10px;border-radius:8px;background:#fff;border:1px solid var(--filete);margin-bottom:6px;font-size:14px;cursor:pointer}
+.pi input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--verde);padding:0}
+.pi.feito{background:#EEF4EB;border-color:#C9D9C1}
+.pi.feito span.tx{color:var(--corpo);text-decoration:line-through;text-decoration-color:#9DB592}
+.pi small{color:var(--meta);font-variant-numeric:tabular-nums;font-size:11px}
+.pauta textarea{height:92px;font-size:14px;margin-top:8px}
+.arq{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--terra);cursor:pointer;margin-top:8px}
+.arq input{display:none}
+.marque{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:400;margin:0 0 16px;cursor:pointer}
+.marque input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--laranja);padding:0;flex:none}
 @media(max-width:900px){.ante main{grid-template-columns:minmax(0,1fr)}.palco{flex-direction:column}.painel{width:100%;max-width:none;height:48%;border-left:0;border-top:4px solid var(--laranja)}.barra .pilula span.txt{display:none}}
 </style>
 </head>
@@ -160,6 +175,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
    <!-- reuniões -->
    <section class="cartao" id="c-reunioes" hidden>
     <div class="quem"><span id="quem"></span><button class="sec mini" id="b-sair">Encerrar a sessão</button></div>
+    <label class="marque"><input type="checkbox" id="aviso" checked><span>Enviar no chat da reunião o aviso de que a conversa está sendo transcrita, quando as legendas forem ligadas.</span></label>
     <div class="rot">Próximas reuniões</div>
     <div id="lista"><p class="nota">Carregando a agenda do Zoom…</p></div>
     <div class="status" id="st-reunioes" role="status" aria-live="polite"></div>
@@ -202,6 +218,12 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
     </ul>
    </div>
    <div class="cartao" style="margin-top:18px">
+    <div class="rot">Pauta da próxima reunião</div>
+    <p class="nota" style="margin:0 0 4px">Um item por linha. A pauta acompanha a reunião no painel, e cada item é marcado quando for tratado.</p>
+    <textarea id="pauta-ini" style="height:104px;font-size:14px" placeholder="Confirmar a data e a duração&#10;Definir o público e o tema central&#10;Combinar os próximos passos" aria-label="Pauta da próxima reunião"></textarea>
+    <label class="arq"><input type="file" id="pauta-arq" accept=".md,.txt,text/plain,text/markdown">Carregar a pauta de um arquivo (.md ou .txt)</label>
+   </div>
+   <div class="cartao" style="margin-top:18px">
     <div class="rot">Pasta das transcrições</div>
     <p class="nota" id="pasta-txt" style="margin:0 0 12px">Escolha uma pasta do Dropbox neste computador. Cada reunião é gravada nela durante a conversa e ao encerrar, pronta para a elaboração da ata e das pendências.</p>
     <button class="sec mini" id="b-pasta">Escolher a pasta</button>
@@ -231,8 +253,9 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
   <iframe id="quadro" title="Zoom" allow="camera; microphone; display-capture; fullscreen; autoplay; clipboard-read; clipboard-write; speaker-selection"></iframe>
   <div class="painel" id="painel">
    <div class="abas" role="tablist">
-    <button role="tab" aria-selected="true" data-aba="tudo">Linha do tempo</button>
+    <button role="tab" aria-selected="true" data-aba="tudo">Conversa</button>
     <button role="tab" aria-selected="false" data-aba="dest">Destaques <b id="n-dest">0</b></button>
+    <button role="tab" aria-selected="false" data-aba="pauta">Pauta <b id="n-pauta">0</b></button>
     <button role="tab" aria-selected="false" data-aba="doc">Documento</button>
    </div>
    <div class="dica" id="dica">
@@ -242,6 +265,11 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
    <div class="meio" id="v-fluxo">
     <div class="fluxo" id="fluxo"><div class="vazio" id="vazio">A transcrição aparece aqui assim que as legendas forem ligadas no Zoom. As anotações e as marcações já estão disponíveis.</div></div>
     <button class="agora" id="b-agora" hidden>Ir para o agora ↓</button>
+   </div>
+   <div class="pauta" id="v-pauta" hidden>
+    <div id="pauta-lista"></div>
+    <textarea id="pauta-nova" placeholder="Novos itens de pauta, um por linha" aria-label="Novos itens de pauta"></textarea>
+    <button class="sec mini" id="b-pauta" style="margin-top:8px">Adicionar à pauta</button>
    </div>
    <div class="saidas" id="v-doc" hidden>
     <div class="numeros">
@@ -267,11 +295,15 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
      <button data-etq="acao" aria-pressed="false">Ação</button>
      <button data-etq="duvida" aria-pressed="false">Dúvida</button>
     </div>
+    <div class="dupla" id="quem-quando" hidden>
+     <input id="resp" maxlength="80" placeholder="Responsável" aria-label="Responsável">
+     <input id="prazo" maxlength="40" placeholder="Prazo" aria-label="Prazo">
+    </div>
     <div class="escrever">
      <textarea id="texto" placeholder="Escreva a anotação. Ela entra no minuto atual da conversa." aria-label="Anotação"></textarea>
      <button id="b-anotar">Inserir</button>
     </div>
-    <div class="atalho"><kbd>Enter</kbd> insere a anotação · <kbd>Shift</kbd> + <kbd>Enter</kbd> quebra a linha · <kbd>Alt</kbd> + <kbd>M</kbd> marca o momento · um clique numa fala a destaca</div>
+    <div class="atalho"><kbd>Enter</kbd> insere · <kbd>Alt</kbd> + <kbd>M</kbd> marca o momento · <kbd>Alt</kbd> + <kbd>N</kbd> <kbd>D</kbd> <kbd>A</kbd> <kbd>U</kbd> escolhem anotação, decisão, ação ou dúvida · um clique numa fala a destaca</div>
    </div>
   </div>
  </div>
@@ -453,8 +485,35 @@ let fonteSdk = false, falante = "", etqAtual = "anotacao", abaAtual = "tudo", co
 const nomes = new Map();  // userId -> nome
 
 function novaSessao(titulo, mn, convite) {
-  return { id: Date.now().toString(36), titulo: titulo || "Reunião", mn, convite: convite || "", inicio: Date.now(), fim: 0, anfitriao: (sessaoZoom.ler() || {}).nome || "", participantes: [], itens: [], seq: 0 };
+  return { id: Date.now().toString(36), titulo: titulo || "Reunião", mn, convite: convite || "", inicio: Date.now(), fim: 0, anfitriao: (sessaoZoom.ler() || {}).nome || "", participantes: [], itens: [], seq: 0, pauta: linhasDePauta($("pauta-ini").value).map((texto, i) => ({ id: i + 1, texto, feito: false, t: null })) };
 }
+function linhasDePauta(texto) {
+  return String(texto || "").split(/\r?\n/).map(l => l.replace(/^\s*(?:[-*•]|\d+[.)]|\[[ xX]?\])\s*/, "").replace(/^\s*\[[ xX]?\]\s*/, "").trim()).filter(l => l && !l.startsWith("#")).map(l => l.slice(0, 240));
+}
+$("pauta-arq").addEventListener("change", async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const t = await f.text(); $("pauta-ini").value = linhasDePauta(t).join("\n"); ev.target.value = "";
+});
+try { $("pauta-ini").value = localStorage.getItem("reunioes:pauta") || ""; $("aviso").checked = localStorage.getItem("reunioes:aviso") !== "0"; } catch (e) {}
+$("pauta-ini").addEventListener("input", () => { try { localStorage.setItem("reunioes:pauta", $("pauta-ini").value); } catch (e) {} });
+$("aviso").addEventListener("change", () => { try { localStorage.setItem("reunioes:aviso", $("aviso").checked ? "1" : "0"); } catch (e) {} });
+function desenharPauta() {
+  if (!S) return; S.pauta = S.pauta || [];
+  const alvo = $("pauta-lista");
+  alvo.innerHTML = S.pauta.length ? "" : '<div class="vazio" style="padding:18px 8px">Nenhum item de pauta. Escreva abaixo, um item por linha.</div>';
+  for (const i of S.pauta) {
+    const el = document.createElement("label"); el.className = "pi" + (i.feito ? " feito" : "");
+    el.innerHTML = `<input type="checkbox" ${i.feito ? "checked" : ""}><span class="tx">${esc(i.texto)}</span><small>${i.feito && i.t != null ? relativo(i.t) : ""}</small>`;
+    el.querySelector("input").addEventListener("change", ev => { i.feito = ev.target.checked; i.t = i.feito ? (aoVivo ? agoraMs() : (S.fim || Date.now()) - S.inicio) : null; desenharPauta(); gravarLogo(); });
+    alvo.appendChild(el);
+  }
+  $("n-pauta").textContent = S.pauta.filter(i => !i.feito).length;
+}
+$("b-pauta").addEventListener("click", () => {
+  if (!S) return; const novas = linhasDePauta($("pauta-nova").value); if (!novas.length) return;
+  let n = S.pauta.reduce((m, i) => Math.max(m, i.id), 0);
+  novas.forEach(texto => S.pauta.push({ id: ++n, texto, feito: false, t: null })); $("pauta-nova").value = ""; desenharPauta(); gravarLogo();
+});
 function agoraMs() { return Date.now() - S.inicio; }
 function relativo(ms) {
   const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
@@ -500,7 +559,7 @@ function desenhar(item) {
     el.title = "Clique para destacar esta fala";
     el.innerHTML = `<div class="t">${relativo(item.t)}</div><div><div class="q">${esc(item.quem || "Participante")}</div><div class="x">${esc(item.texto)}</div></div>`;
   } else if (item.tipo === "nota") {
-    el.innerHTML = `<div class="t">${relativo(item.t)}</div><div>${tirar}<span class="etq ${item.etq}">${esc(ETQ[item.etq] || "Anotação")}</span><div class="x">${esc(item.texto)}</div></div>`;
+    el.innerHTML = `<div class="t">${relativo(item.t)}</div><div>${tirar}<span class="etq ${item.etq}">${esc(ETQ[item.etq] || "Anotação")}</span><div class="x">${esc(item.texto)}</div>${item.resp || item.prazo ? `<div class="rp">${item.resp ? `Responsável: <b>${esc(item.resp)}</b>` : ""}${item.resp && item.prazo ? " · " : ""}${item.prazo ? `Prazo: <b>${esc(item.prazo)}</b>` : ""}</div>` : ""}</div>`;
   } else {
     el.innerHTML = `<div class="t">${relativo(item.t)}</div><div>${tirar}<span class="etq">★ ${esc(ETQ.importante)}</span><div class="x">${esc(item.texto || "Marcado por " + (S.anfitriao || "anfitrião"))}</div></div>`;
   }
@@ -510,7 +569,7 @@ function desenhar(item) {
 function filtrar(el, item) { el.hidden = abaAtual === "dest" && !(item.tipo !== "fala" || item.dest); }
 function redesenharTudo() {
   $("fluxo").innerHTML = S.itens.length ? "" : '<div class="vazio" id="vazio">Nenhum registro nesta sessão.</div>';
-  S.itens.forEach(desenhar); contadores();
+  S.itens.forEach(desenhar); contadores(); desenharPauta();
 }
 function contadores() {
   const d = contarDestaques();
@@ -563,6 +622,10 @@ function registrarFala(quem, texto, chave) {
 function viva() {
   if ($("s-estado").classList.contains("viva")) return;
   $("s-estado").classList.add("viva"); $("s-estado-txt").textContent = "Transcrevendo"; $("dica").hidden = true;
+  if (S && S.papel === 1 && !S.avisado && $("aviso").checked && !$("quadro").hidden) {
+    S.avisado = true;
+    $("quadro").contentWindow.postMessage({ sala: "reunioes", tipo: "chat", mensagem: C.avisoTranscricao || "Aviso: esta reunião está sendo transcrita para o registro da ata. Quem preferir que algum trecho fique fora do registro pode avisar a qualquer momento." }, location.origin);
+  }
 }
 
 // ---- marcações e anotações
@@ -580,18 +643,31 @@ function marcarMomento() {
 function anotar() {
   if (!S) return;
   const texto = $("texto").value.trim(); if (!texto) { $("texto").focus(); return; }
-  incluir({ tipo: "nota", etq: etqAtual, texto, t: aoVivo ? agoraMs() : (S.fim || Date.now()) - S.inicio });
-  $("texto").value = ""; $("texto").focus();
+  const comQuem = etqAtual === "acao" || etqAtual === "decisao";
+  const nota = { tipo: "nota", etq: etqAtual, texto, t: aoVivo ? agoraMs() : (S.fim || Date.now()) - S.inicio };
+  if (comQuem && $("resp").value.trim()) nota.resp = $("resp").value.trim();
+  if (comQuem && $("prazo").value.trim()) nota.prazo = $("prazo").value.trim();
+  incluir(nota);
+  $("texto").value = ""; $("resp").value = ""; $("prazo").value = ""; $("texto").focus();
 }
 $("b-marcar").addEventListener("click", marcarMomento);
 $("b-anotar").addEventListener("click", anotar);
 $("texto").addEventListener("keydown", ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); anotar(); } });
-document.addEventListener("keydown", ev => { if (ev.altKey && ev.key.toLowerCase() === "m") { ev.preventDefault(); marcarMomento(); } });
-document.querySelectorAll(".chips button").forEach(b => b.addEventListener("click", () => {
-  etqAtual = b.dataset.etq;
-  document.querySelectorAll(".chips button").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+function escolherTipo(etq) {
+  etqAtual = etq;
+  document.querySelectorAll(".chips button").forEach(o => o.setAttribute("aria-pressed", String(o.dataset.etq === etq)));
+  $("quem-quando").hidden = !(etq === "acao" || etq === "decisao");
+  if (abaAtual === "doc") document.querySelector('.abas [data-aba="tudo"]').click();
   $("texto").focus();
-}));
+}
+const ATALHOS = { KeyN: "anotacao", KeyD: "decisao", KeyA: "acao", KeyU: "duvida" };
+document.addEventListener("keydown", ev => {
+  if (!ev.altKey || ev.ctrlKey || ev.metaKey || $("sala").hidden) return;
+  if (ev.code === "KeyM") { ev.preventDefault(); marcarMomento(); }
+  else if (ATALHOS[ev.code]) { ev.preventDefault(); escolherTipo(ATALHOS[ev.code]); }
+});
+for (const id of ["resp", "prazo"]) $(id).addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); anotar(); } });
+document.querySelectorAll(".chips button").forEach(b => b.addEventListener("click", () => escolherTipo(b.dataset.etq)));
 $("fluxo").addEventListener("click", ev => {
   const el = ev.target.closest(".item"); if (!el || !S) return;
   const item = S.itens.find(i => String(i.id) === el.dataset.id); if (!item) return;
@@ -605,8 +681,9 @@ $("b-agora").addEventListener("click", () => { $("fluxo").scrollTop = $("fluxo")
 document.querySelectorAll(".abas button").forEach(b => b.addEventListener("click", () => {
   abaAtual = b.dataset.aba;
   document.querySelectorAll(".abas button").forEach(o => o.setAttribute("aria-selected", String(o === b)));
-  $("v-fluxo").hidden = abaAtual === "doc"; $("v-doc").hidden = abaAtual !== "doc"; $("mesa").hidden = abaAtual === "doc";
-  if (S && abaAtual !== "doc") { S.itens.forEach(i => { const el = elementoDe(i); if (el) filtrar(el, i); }); if (colado) $("fluxo").scrollTop = $("fluxo").scrollHeight; }
+  const conversa = abaAtual === "tudo" || abaAtual === "dest";
+  $("v-fluxo").hidden = !conversa; $("v-doc").hidden = abaAtual !== "doc"; $("v-pauta").hidden = abaAtual !== "pauta"; $("mesa").hidden = abaAtual === "doc";
+  if (S && conversa) { S.itens.forEach(i => { const el = elementoDe(i); if (el) filtrar(el, i); }); if (colado) $("fluxo").scrollTop = $("fluxo").scrollHeight; }
 }));
 $("b-painel").addEventListener("click", () => {
   const sem = $("sala").classList.toggle("sem-painel");
@@ -639,7 +716,7 @@ async function abrir(mn, senha, titulo, botao) {
   status("st-reunioes", "Preparando a reunião…");
   try {
     const d = await servico("/anfitriao/entrar", { access_token: await tokenValido(), meetingNumber: mn, password: senha || "" });
-    S = novaSessao(d.topic || titulo || "Reunião", d.meetingNumber, d.join_url);
+    S = novaSessao(d.topic || titulo || "Reunião", d.meetingNumber, d.join_url); S.papel = d.role; desenharPauta();
     entrada = { signature: d.signature, sdkKey: d.sdkKey, mn: d.meetingNumber, pwd: d.password, nome: d.nome, email: d.email, zak: d.zak, idioma: C.idioma || "pt-PT", versao: C.versaoSdk || "6.10.0" };
     $("ante").hidden = true; $("sala").hidden = false;
     $("s-titulo").textContent = S.titulo + (d.role === 1 ? " · anfitrião" : " · participante");
@@ -674,6 +751,7 @@ window.addEventListener("message", ev => {
     for (const p of l) { const nome = p && (p.userName || p.displayName); if (!nome) continue; if (p.userId != null) nomes.set(p.userId, nome); if (!S.participantes.includes(nome)) S.participantes.push(nome); }
     gravarLogo();
   }
+  else if (m.tipo === "chat-erro") { S.avisado = false; console.debug("[reunioes] aviso no chat não enviado", m.detalhe); }
   else if (m.tipo === "saiu") encerrar();
   else if (m.tipo === "erro") {
     $("sala").hidden = true; $("ante").hidden = false; $("quadro").src = "about:blank"; aoVivo = false;
@@ -710,7 +788,9 @@ function retrato() {
   });
   return {
     titulo: S.titulo, data: fmtData.format(new Date(S.inicio)), inicio: fmtHora.format(new Date(S.inicio)), fim: fmtHora.format(new Date(fim)),
-    duracao: relativo(fim - S.inicio), anfitriao: S.anfitriao, participantes: S.participantes, itens, destaques, hora,
+    duracao: relativo(fim - S.inicio), duracaoMs: Math.max(1000, fim - S.inicio), anfitriao: S.anfitriao, participantes: S.participantes, itens, destaques, hora,
+    acoes: itens.filter(i => i.tipo === "nota" && i.etq === "acao"), decisoes: itens.filter(i => i.tipo === "nota" && i.etq === "decisao"),
+    duvidas: itens.filter(i => i.tipo === "nota" && i.etq === "duvida"), pauta: S.pauta || [],
     arquivo: "Transcricao com anotacoes - " + S.titulo.replace(/[\\/:*?"<>|]+/g, " ").trim().slice(0, 70) + " - " + new Date(S.inicio).toISOString().slice(0, 10)
   };
 }
@@ -719,66 +799,128 @@ function baixar(nome, blob) {
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
 }
 
+const ICO = {
+  anotacao: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  decisao: '<path d="M20 6 9 17l-5-5"/>',
+  acao: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  duvida: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+  importante: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>',
+  fala: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  pauta: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>'
+};
+const TOM = { anotacao: "#E5662C", decisao: "#5E7D52", acao: "#2F6B6F", duvida: "#7A4E6D", importante: "#B5781E", fala: "#4E6E8E", pauta: "#B04A1C" };
+const disco = (tipo, mm = 8) => `<span class="dk" style="width:${mm}mm;height:${mm}mm;background:${TOM[tipo]}"><svg viewBox="0 0 24 24">${ICO[tipo]}</svg></span>`;
+
+function linhaDoTempo(R) {
+  // Régua da reunião: cada registro no minuto em que aconteceu.
+  const L = 660, x = t => 20 + Math.min(1, Math.max(0, t / R.duracaoMs)) * (L - 40);
+  const marcas = R.itens.filter(i => i.tipo !== "fala").map(i => {
+    const tipo = i.tipo === "marco" ? "importante" : (i.etq || "anotacao");
+    return `<circle cx="${x(i.t).toFixed(1)}" cy="34" r="7" fill="${TOM[tipo]}" stroke="#F6F2EC" stroke-width="2"/>`;
+  }).join("");
+  const falas = R.itens.filter(i => i.tipo === "fala").map(i => `<rect x="${x(i.t).toFixed(1)}" y="${i.dest ? 22 : 28}" width="2" height="${i.dest ? 24 : 12}" fill="${i.dest ? "#B5781E" : "#CFC5B8"}"/>`).join("");
+  const passos = [0, .25, .5, .75, 1].map(f => `<text x="${(20 + f * (L - 40)).toFixed(1)}" y="68" text-anchor="middle" font-size="12" fill="#8D8377">${relativo(f * R.duracaoMs)}</text><line x1="${(20 + f * (L - 40)).toFixed(1)}" y1="46" x2="${(20 + f * (L - 40)).toFixed(1)}" y2="52" stroke="#8D8377" stroke-width="1"/>`).join("");
+  return `<svg viewBox="0 0 ${L} 76" style="width:174mm;height:20mm;display:block" font-family="Poppins,Arial,sans-serif"><line x1="20" y1="34" x2="${L - 20}" y2="34" stroke="#2A211C" stroke-width="2" stroke-linecap="round"/>${falas}${marcas}${passos}</svg>`;
+}
+
 function documentoHtml() {
   const R = retrato(), raiz = new URL("../assets/logo-gt.png", location.href).href;
+  const quem = i => (i.resp || i.prazo) ? `<p class="rp">${i.resp ? `Responsável: <b>${esc(i.resp)}</b>` : ""}${i.resp && i.prazo ? " · " : ""}${i.prazo ? `Prazo: <b>${esc(i.prazo)}</b>` : ""}</p>` : "";
   const linha = i => {
     if (i.tipo === "fala") return `<div class="l fala${i.dest ? " dest" : ""}"><span class="t">${relativo(i.t)}</span><div><b>${esc(i.quem || "Participante")}</b>${i.dest ? ' <span class="s">★ destaque</span>' : ""}<p>${esc(i.texto)}</p></div></div>`;
-    if (i.tipo === "nota") return `<div class="l nota"><span class="t">${relativo(i.t)}</span><div><span class="e">${esc(ETQ[i.etq] || "Anotação")}</span><p>${esc(i.texto)}</p></div></div>`;
+    if (i.tipo === "nota") return `<div class="l nota" style="border-left-color:${TOM[i.etq] || TOM.anotacao}"><span class="t">${relativo(i.t)}</span><div><span class="e" style="color:${TOM[i.etq] || TOM.anotacao}">${esc(ETQ[i.etq] || "Anotação")}</span><p>${esc(i.texto)}</p>${quem(i)}</div></div>`;
     return `<div class="l marco"><span class="t">${relativo(i.t)}</span><div><span class="e">★ ${esc(ETQ.importante)}</span>${i.texto ? `<p>${esc(i.texto)}</p>` : ""}</div></div>`;
   };
-  const dest = R.destaques.length ? R.destaques.map(d => `<div class="d"><div class="dh"><span class="e">${esc(d.rotulo)}</span><span class="t">${relativo(d.t)} · ${esc(R.hora(d.t))}</span></div>
-    ${d.tipo === "fala" ? `<p><b>${esc(d.quem || "Participante")}:</b> ${esc(d.texto)}</p>` : (d.texto ? `<p>${esc(d.texto)}</p>` : "")}
-    ${d.contexto && d.contexto.length ? `<div class="c"><span>O que estava sendo dito</span>${d.contexto.map(c => `<p>${esc(c)}</p>`).join("")}</div>` : ""}</div>`).join("") : '<p class="nada">Nenhum destaque ou anotação nesta reunião.</p>';
+  const tipoDe = d => d.tipo === "marco" ? "importante" : d.tipo === "fala" ? "fala" : (d.etq || "anotacao");
+  const dest = R.destaques.length ? R.destaques.map(d => `<div class="d" style="border-left-color:${TOM[tipoDe(d)]}">${disco(tipoDe(d))}<div class="dc"><div class="dh"><span class="e" style="color:${TOM[tipoDe(d)]}">${esc(d.rotulo)}</span><span class="t">${relativo(d.t)} · ${esc(R.hora(d.t))}</span></div>
+    ${d.tipo === "fala" ? `<p><b>${esc(d.quem || "Participante")}:</b> ${esc(d.texto)}</p>` : (d.texto ? `<p>${esc(d.texto)}</p>` : "")}${quem(d)}
+    ${d.contexto && d.contexto.length ? `<div class="c"><span>O que estava sendo dito</span>${d.contexto.map(c => `<p>${esc(c)}</p>`).join("")}</div>` : ""}</div></div>`).join("") : '<p class="nada">Nenhum destaque ou anotação nesta reunião.</p>';
+  const quadro = (titulo, tipo, itens, comQuem) => itens.length ? `<h3>${disco(tipo, 7)}${esc(titulo)}</h3><table class="q"><thead><tr><th style="width:15mm">Minuto</th><th>${tipo === "acao" ? "Ação" : tipo === "decisao" ? "Decisão" : "Dúvida"}</th>${comQuem ? '<th style="width:38mm">Responsável</th><th style="width:36mm">Prazo</th>' : ""}</tr></thead><tbody>${itens.map(i => `<tr><td class="t">${relativo(i.t)}</td><td>${esc(i.texto)}</td>${comQuem ? `<td>${esc(i.resp || "A definir")}</td><td>${esc(i.prazo || "A definir")}</td>` : ""}</tr>`).join("")}</tbody></table>` : "";
+  const feitos = R.pauta.filter(i => i.feito).length;
+  const nFalas = R.itens.filter(i => i.tipo === "fala").length, nMarcos = R.itens.filter(i => i.tipo === "marco").length;
+  const n = (v, r, tipo) => `<div class="n">${disco(tipo, 9)}<div><b>${v}</b><span>${r}</span></div></div>`;
+  let sec = 0; const num = () => String(++sec).padStart(2, "0");
+  const temQuadros = R.acoes.length + R.decisoes.length + R.duvidas.length > 0;
   return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(R.arquivo)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital@1&display=swap" rel="stylesheet">
 <style>
-@page{size:A4;margin:16mm 18mm 18mm}
-@page :first{margin:0}
-html{background:#F6F2EC}
+@page{size:A4;margin:16mm 18mm 20mm;background:#F6F2EC;
+  @bottom-left{content:"Transcrição com anotações · Gino Terentim · Rethinking Learning";font:500 8.5pt Poppins,Arial,sans-serif;color:#8D8377;letter-spacing:.4px}
+  @bottom-right{content:counter(page);font:700 11.5pt Poppins,Arial,sans-serif;color:#fff;background:#B04A1C;border-radius:50%;width:9.5mm;height:9.5mm;text-align:center;vertical-align:middle;margin:3mm 0 5mm auto}}
+@page :first{margin:0;@bottom-left{content:none}@bottom-right{content:none;background:none}}
 *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html{background:#F6F2EC}
 body{margin:0;font:11.5pt/1.55 Poppins,Arial,sans-serif;color:#2A211C;background:#F6F2EC}
-.capa{background:#1B1512;color:#FBEEE5;padding:22mm 18mm;height:297mm;display:flex;flex-direction:column;border-top:3mm solid #C9A24D;border-bottom:3mm solid #C9A24D;break-after:page}
-.capa img{height:22mm;align-self:flex-start}
-.capa .o{font-size:10pt;letter-spacing:3px;font-weight:700;color:#E5662C;text-transform:uppercase;margin-top:42mm}
-.capa h1{font-size:30pt;line-height:1.12;margin:5mm 0 8mm;font-weight:700}
-.capa h1 em{font-style:normal;color:#E5662C}
+.capa{background:#1B1512;color:#FBEEE5;padding:22mm 18mm;height:297mm;display:flex;flex-direction:column;border-top:3mm solid #C9A24D;border-bottom:3mm solid #C9A24D;break-after:page;position:relative;overflow:hidden}
+.capa .hex{position:absolute;right:-28mm;top:22mm;width:150mm;height:150mm;opacity:.5}
+.capa img{height:24mm;align-self:flex-start;position:relative}
+.capa .o{font-size:10pt;letter-spacing:3px;font-weight:700;color:#E5662C;text-transform:uppercase;margin-top:44mm;position:relative}
+.capa h1{font-size:30pt;line-height:1.12;margin:5mm 0 8mm;font-weight:700;position:relative;max-width:150mm}
 .capa .r{width:26mm;height:1.2mm;background:#E5662C;margin-bottom:8mm}
-.capa dl{display:grid;grid-template-columns:38mm 1fr;gap:2.5mm 4mm;margin:0;font-size:11.5pt}
+.capa dl{display:grid;grid-template-columns:38mm 1fr;gap:2.5mm 4mm;margin:0;font-size:11.5pt;position:relative}
 .capa dt{color:#C9A24D;font-weight:600}.capa dd{margin:0;color:#E8DED4}
 .capa .p{margin-top:auto;font-size:9.5pt;color:#BFB3A3;letter-spacing:1px}
 .eye{font-size:9.5pt;letter-spacing:2.6px;font-weight:700;color:#E5662C;text-transform:uppercase;display:flex;gap:4mm;align-items:center;margin:0 0 3mm}
 .eye::after{content:"";flex:1;height:.3mm;background:#E2D9CD}
 h2{font-size:21pt;line-height:1.15;margin:0 0 6mm}h2 em{font-style:normal;color:#E5662C}
+h3{font-size:13pt;margin:7mm 0 3mm;display:flex;align-items:center;gap:3mm;break-after:avoid}
 section{break-before:page}section.primeira{break-before:auto}
-.d{background:#fff;border:.3mm solid #E2D9CD;border-left:1.2mm solid #E5662C;border-radius:2mm;padding:4mm 5mm;margin-bottom:4mm;break-inside:avoid}
+.dk{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex:none}
+.dk svg{width:54%;height:54%;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ns{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin-bottom:6mm}
+.n{background:#fff;border:.3mm solid #E2D9CD;border-radius:2mm;padding:3.5mm;display:flex;gap:3mm;align-items:center}
+.n b{display:block;font-size:19pt;line-height:1;color:#2A211C}.n span{font-size:8.5pt;letter-spacing:1.2px;text-transform:uppercase;color:#8D8377;font-weight:600}
+.regua{background:#fff;border:.3mm solid #E2D9CD;border-radius:2mm;padding:4mm 5mm 2mm;break-inside:avoid}
+.leg{display:flex;flex-wrap:wrap;gap:2mm 5mm;font-size:9.5pt;color:#4A3F37;margin:2mm 0 2mm}
+.leg i{display:inline-block;width:3.2mm;height:3.2mm;border-radius:50%;margin-right:1.5mm;vertical-align:-.3mm}
+table.q{width:100%;border-collapse:collapse;background:#fff;border:.3mm solid #E2D9CD;font-size:11pt}
+table.q th{background:#2A211C;color:#FBEEE5;text-align:left;font-size:8.5pt;letter-spacing:1.4px;text-transform:uppercase;padding:2.2mm 3mm}
+table.q td{padding:2.6mm 3mm;border-top:.3mm solid #EEE7DD;vertical-align:top;overflow-wrap:anywhere}
+table.q tr{break-inside:avoid}
+.d{background:#fff;border:.3mm solid #E2D9CD;border-left:1.2mm solid #E5662C;border-radius:2mm;padding:4mm 5mm;margin-bottom:4mm;break-inside:avoid;display:flex;gap:4mm;align-items:flex-start}
+.dc{flex:1;min-width:0}
 .dh{display:flex;justify-content:space-between;gap:4mm;align-items:center;margin-bottom:1.5mm}
-.e{font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;background:#FBEEE5;color:#B04A1C;border-radius:1mm;padding:.6mm 2mm}
-.t{font-size:9.5pt;color:#8D8377;font-variant-numeric:tabular-nums}
-.d p{margin:1mm 0 0}.c{margin-top:3mm;padding-top:2.5mm;border-top:.3mm solid #EEE7DD;color:#4A3F37;font-size:10.5pt}
+.e{font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;color:#B04A1C}
+.t{font-size:9.5pt;color:#8D8377;font-variant-numeric:tabular-nums;white-space:nowrap}
+.d p{margin:1mm 0 0}.rp{font-size:10.5pt;color:#4A3F37}
+.c{margin-top:3mm;padding-top:2.5mm;border-top:.3mm solid #EEE7DD;color:#4A3F37;font-size:10.5pt}
 .c span{display:block;font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;color:#8D8377;margin-bottom:1mm}
+.pp{display:grid;grid-template-columns:8mm 1fr auto;gap:3mm;align-items:center;background:#fff;border:.3mm solid #E2D9CD;border-radius:2mm;padding:3mm 4mm;margin-bottom:2.5mm;break-inside:avoid}
+.pp .ck{width:6.5mm;height:6.5mm;border-radius:50%;border:.5mm solid #CFC5B8;display:flex;align-items:center;justify-content:center}
+.pp.ok .ck{background:#5E7D52;border-color:#5E7D52}.pp .ck svg{width:60%;height:60%;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pp .st{font-size:8.5pt;letter-spacing:1.4px;font-weight:700;text-transform:uppercase;color:#B04A1C}.pp.ok .st{color:#5E7D52}
 .l{display:grid;grid-template-columns:16mm 1fr;gap:3mm;padding:2mm 3mm;border-left:1mm solid transparent;break-inside:avoid}
 .l p{margin:0;white-space:pre-wrap}.l b{color:#2F6B6F;font-size:10.5pt}.s{font-size:9pt;color:#B5781E;font-weight:700}
 .l.dest{background:#FFF3D6;border-left-color:#B5781E}
 .l.nota{background:#fff;border:.3mm solid #E2D9CD;border-left:1mm solid #E5662C;border-radius:1.5mm;margin:1.5mm 0}
 .l.marco{background:#1B1512;border-left-color:#C9A24D;border-radius:1.5mm;margin:1.5mm 0}
-.l.marco p{color:#FBEEE5;font-weight:600}.l.marco .t{color:#BFB3A3}.l.marco .e{background:#C9A24D;color:#1B1512}
+.l.marco p{color:#FBEEE5;font-weight:600}.l.marco .t{color:#BFB3A3}.l.marco .e{color:#C9A24D}
 .nada{color:#8D8377}
 .fim{margin-top:10mm;padding-top:4mm;border-top:.6mm solid #E5662C;font:italic 12pt Lora,Georgia,serif;color:#4A3F37}
 .bar{position:fixed;top:0;left:0;right:0;background:#1B1512;color:#FBEEE5;padding:10px 18px;display:flex;gap:14px;align-items:center;justify-content:space-between;font-size:14px;z-index:9}
 .bar button{font:600 14px Poppins,Arial,sans-serif;border:0;border-radius:24px;padding:9px 20px;background:#E5662C;color:#fff;cursor:pointer}
-@media screen{html{background:#8D8377}body{padding:70px 0 40px;background:#8D8377}.folha{max-width:210mm;margin:0 auto;padding:0 18mm 16mm;background:#F6F2EC;box-shadow:0 2px 22px rgba(0,0,0,.18)}.capa{margin:0 -18mm 12mm}}
+@media screen{html{background:#8D8377}body{padding:70px 0 40px;background:#8D8377}.folha{max-width:210mm;margin:0 auto;padding:0 18mm 16mm;background:#F6F2EC;box-shadow:0 2px 22px rgba(0,0,0,.18)}.capa{margin:0 -18mm 12mm}section{margin-top:14mm}}
 @media print{.bar{display:none}}
 </style></head><body>
 <div class="bar"><span>Transcrição com anotações · na janela de impressão, escolha <b>Salvar como PDF</b></span><button onclick="print()">Salvar em PDF</button></div>
 <div class="folha">
-<div class="capa"><img src="${raiz}" alt="Gino Terentim · Rethinking Learning">
+<div class="capa"><svg class="hex" viewBox="0 0 300 300" fill="none" stroke="#C9A24D" stroke-width="1"><path d="M150 20l112 65v130l-112 65L38 215V85z" opacity=".5"/><path d="M150 60l78 45v90l-78 45-78-45v-90z" opacity=".35"/><path d="M150 100l43 25v50l-43 25-43-25v-50z" opacity=".25"/></svg>
+ <img src="${raiz}" alt="Gino Terentim · Rethinking Learning">
  <div class="o">Transcrição com anotações</div><h1>${esc(R.titulo)}</h1><div class="r"></div>
  <dl><dt>Data</dt><dd>${esc(R.data)}</dd><dt>Horário</dt><dd>${esc(R.inicio)} às ${esc(R.fim)} (${esc(R.duracao)})</dd>
  ${R.anfitriao ? `<dt>Condução</dt><dd>${esc(R.anfitriao)}</dd>` : ""}${R.participantes.length ? `<dt>Participantes</dt><dd>${esc(R.participantes.join(", "))}</dd>` : ""}
- <dt>Registros</dt><dd>${R.itens.filter(i => i.tipo === "fala").length} falas · ${R.destaques.length} destaques e anotações</dd></dl>
+ <dt>Registros</dt><dd>${nFalas} falas · ${R.destaques.length} destaques e anotações</dd></dl>
  <div class="p">GINO TERENTIM · RETHINKING LEARNING</div></div>
-<section class="primeira"><div class="eye">01 · Destaques e anotações</div><h2>Os momentos marcados <em>durante a reunião</em></h2>${dest}</section>
-<section><div class="eye">02 · Transcrição integral</div><h2>A conversa, <em>na ordem em que aconteceu</em></h2>
+<section class="primeira"><div class="eye">${num()} · Síntese da reunião</div><h2>Decisões, ações <em>e momentos marcados</em></h2>
+ <div class="ns">${n(R.decisoes.length, "Decisões", "decisao")}${n(R.acoes.length, "Ações", "acao")}${n(R.duvidas.length, "Dúvidas", "duvida")}${n(nMarcos, "Momentos", "importante")}</div>
+ <div class="regua"><div class="e" style="color:#8D8377">Linha do tempo da reunião</div>${linhaDoTempo(R)}
+ <div class="leg"><span><i style="background:${TOM.importante}"></i>Momento importante</span><span><i style="background:${TOM.decisao}"></i>Decisão</span><span><i style="background:${TOM.acao}"></i>Ação</span><span><i style="background:${TOM.duvida}"></i>Dúvida</span><span><i style="background:${TOM.anotacao}"></i>Anotação</span><span><i style="background:#CFC5B8;border-radius:0;width:1mm"></i>Fala</span></div></div>
+ ${quadro("Ações combinadas", "acao", R.acoes, true)}${quadro("Decisões registradas", "decisao", R.decisoes, true)}${quadro("Dúvidas em aberto", "duvida", R.duvidas, false)}
+ ${temQuadros ? "" : '<p class="nada" style="margin-top:6mm">Nenhuma ação, decisão ou dúvida foi registrada durante a reunião.</p>'}</section>
+${R.pauta.length ? `<section><div class="eye">${num()} · Pauta</div><h2>Itens tratados <em>e itens pendentes</em></h2><p style="margin:-2mm 0 5mm;color:#4A3F37">${feitos} de ${R.pauta.length} itens tratados.</p>
+ ${R.pauta.map(i => `<div class="pp${i.feito ? " ok" : ""}"><span class="ck">${i.feito ? '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>' : ""}</span><span>${esc(i.texto)}</span><span class="st">${i.feito ? "Tratado" + (i.t != null ? " · " + relativo(i.t) : "") : "Pendente"}</span></div>`).join("")}</section>` : ""}
+<section><div class="eye">${num()} · Destaques e anotações</div><h2>Os momentos marcados <em>durante a reunião</em></h2>${dest}</section>
+<section><div class="eye">${num()} · Transcrição integral</div><h2>A conversa, <em>na ordem em que aconteceu</em></h2>
 ${R.itens.length ? R.itens.map(linha).join("") : '<p class="nada">A reunião não teve falas transcritas.</p>'}
 <div class="fim">Registro gerado na sala de reuniões de Gino Terentim · Rethinking Learning.</div></section>
 </div></body></html>`;
@@ -795,18 +937,23 @@ function documentoMd() {
   if (R.anfitriao) L.push(`- Condução: ${R.anfitriao}`);
   if (R.participantes.length) L.push(`- Participantes: ${R.participantes.join(", ")}`);
   if (S.modo === "acompanhamento") L.push("- Modo: acompanhamento de reunião conduzida em outro aplicativo (marcações e anotações, sem falas)");
+  const tabela = (titulo, itens, comQuem) => { if (!itens.length) return; L.push("", "## " + titulo, "", comQuem ? "| Minuto | Registro | Responsável | Prazo |" : "| Minuto | Registro |", comQuem ? "|---|---|---|---|" : "|---|---|");
+    itens.forEach(i => L.push(`| ${relativo(i.t)} | ${i.texto.replace(/\|/g, "/").replace(/\n/g, " ")} |` + (comQuem ? ` ${i.resp || "A definir"} | ${i.prazo || "A definir"} |` : ""))); };
+  tabela("Ações combinadas", R.acoes, true); tabela("Decisões registradas", R.decisoes, true); tabela("Dúvidas em aberto", R.duvidas, false);
+  if (R.pauta.length) { L.push("", "## Pauta", ""); R.pauta.forEach(i => L.push(`- [${i.feito ? "x" : " "}] ${i.texto}${i.feito && i.t != null ? " (tratado em " + relativo(i.t) + ")" : ""}`)); }
   L.push("", "## Destaques e anotações", "");
   if (!R.destaques.length) L.push("Nenhum destaque ou anotação nesta reunião.", "");
   for (const d of R.destaques) {
     L.push(`### [${relativo(d.t)} · ${R.hora(d.t)}] ${d.rotulo}`);
     if (d.tipo === "fala") L.push(`**${d.quem || "Participante"}:** ${d.texto}`); else if (d.texto) L.push(d.texto);
+    if (d.resp || d.prazo) L.push(`Responsável: ${d.resp || "A definir"} · Prazo: ${d.prazo || "A definir"}`);
     if (d.contexto && d.contexto.length) L.push("", "O que estava sendo dito:", ...d.contexto.map(c => `> ${c}`));
     L.push("");
   }
   L.push("## Transcrição integral", "");
   for (const i of R.itens) {
     if (i.tipo === "fala") L.push(`**[${relativo(i.t)}] ${i.quem || "Participante"}:**${i.dest ? " ★" : ""} ${i.texto}`, "");
-    else if (i.tipo === "nota") L.push(`> **[${relativo(i.t)}] ${ETQ[i.etq] || "Anotação"}:** ${i.texto}`, "");
+    else if (i.tipo === "nota") L.push(`> **[${relativo(i.t)}] ${ETQ[i.etq] || "Anotação"}:** ${i.texto}${i.resp || i.prazo ? ` (responsável: ${i.resp || "a definir"}; prazo: ${i.prazo || "a definir"})` : ""}`, "");
     else L.push(`> **[${relativo(i.t)}] ★ ${ETQ.importante}**${i.texto ? ": " + i.texto : ""}`, "");
   }
   return L.join("\n");
@@ -830,18 +977,31 @@ async function documentoDocx() {
   ];
   if (R.anfitriao) blocos.push(par([run("Condução: ", { bold: true }), run(R.anfitriao)]));
   if (R.participantes.length) blocos.push(par([run("Participantes: ", { bold: true }), run(R.participantes.join(", "))]));
-  blocos.push(eyebrow("01 · Destaques e anotações"), titulo("Os momentos marcados ", "durante a reunião"));
+  let sec = 0; const num = () => String(++sec).padStart(2, "0");
+  const celula = (t, o = {}) => new D.TableCell({ children: [par(run(t, o.run || {}), { spacing: { after: 40 } })], shading: o.fill ? sombra(o.fill) : undefined, margins: { top: 60, bottom: 60, left: 100, right: 100 } });
+  const quadro = (nome, itens, comQuem) => { if (!itens.length) return;
+    blocos.push(par(run(nome, { bold: true, size: 26 }), { spacing: { before: 240, after: 100 }, keepNext: true }));
+    const cab = ["Minuto", "Registro"].concat(comQuem ? ["Responsável", "Prazo"] : []);
+    blocos.push(new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ tableHeader: true, children: cab.map(c => celula(c.toUpperCase(), { fill: "2A211C", run: { bold: true, color: "FBEEE5", size: 17 } })) })]
+      .concat(itens.map(i => new D.TableRow({ children: [celula(relativo(i.t), { run: { color: "8D8377", size: 20 } }), celula(i.texto)].concat(comQuem ? [celula(i.resp || "A definir"), celula(i.prazo || "A definir")] : []) }))) })); };
+  blocos.push(eyebrow(num() + " · Síntese da reunião"), titulo("Decisões, ações ", "e momentos marcados"));
+  if (!(R.acoes.length + R.decisoes.length + R.duvidas.length)) blocos.push(par(run("Nenhuma ação, decisão ou dúvida foi registrada durante a reunião.", { color: "8D8377" })));
+  quadro("Ações combinadas", R.acoes, true); quadro("Decisões registradas", R.decisoes, true); quadro("Dúvidas em aberto", R.duvidas, false);
+  if (R.pauta.length) { blocos.push(eyebrow(num() + " · Pauta"), titulo("Itens tratados ", "e itens pendentes"));
+    R.pauta.forEach(i => blocos.push(par([run(i.feito ? "✓  " : "○  ", { bold: true, color: i.feito ? "5E7D52" : "B04A1C" }), run(i.texto), run(i.feito ? "   tratado" + (i.t != null ? " em " + relativo(i.t) : "") : "   pendente", { color: "8D8377", size: 18 })]))); }
+  blocos.push(eyebrow(num() + " · Destaques e anotações"), titulo("Os momentos marcados ", "durante a reunião"));
   if (!R.destaques.length) blocos.push(par(run("Nenhum destaque ou anotação nesta reunião.", { color: "8D8377" })));
   for (const d of R.destaques) {
     blocos.push(par([run(d.rotulo.toUpperCase() + "  ", { bold: true, color: "B04A1C", size: 18 }), run(`${relativo(d.t)} · ${R.hora(d.t)}`, { color: "8D8377", size: 18 })], { spacing: { before: 200, after: 40 }, keepNext: true }));
     if (d.tipo === "fala") blocos.push(par([run((d.quem || "Participante") + ": ", { bold: true }), run(d.texto)])); else if (d.texto) blocos.push(par(run(d.texto, { bold: d.tipo === "marco" })));
+    if (d.resp || d.prazo) blocos.push(par(run(`Responsável: ${d.resp || "A definir"} · Prazo: ${d.prazo || "A definir"}`, { color: "4A3F37", size: 20 })));
     if (d.contexto && d.contexto.length) { blocos.push(par(run("O QUE ESTAVA SENDO DITO", { bold: true, color: "8D8377", size: 16 }), { spacing: { after: 40 }, indent: { left: 360 } })); d.contexto.forEach(c => blocos.push(par(run(c, { color: "4A3F37", size: 20 }), { indent: { left: 360 }, spacing: { after: 60 } }))); }
   }
-  blocos.push(new D.Paragraph({ children: [new D.PageBreak()] }), eyebrow("02 · Transcrição integral"), titulo("A conversa, ", "na ordem em que aconteceu"));
+  blocos.push(new D.Paragraph({ children: [new D.PageBreak()] }), eyebrow(num() + " · Transcrição integral"), titulo("A conversa, ", "na ordem em que aconteceu"));
   for (const i of R.itens) {
     const t = run(`[${relativo(i.t)}]  `, { color: "8D8377", size: 18 });
     if (i.tipo === "fala") blocos.push(par([t, run((i.quem || "Participante") + (i.dest ? " ★" : "") + ": ", { bold: true, color: "2F6B6F" }), run(i.texto)], i.dest ? { shading: sombra("FFF3D6") } : {}));
-    else if (i.tipo === "nota") blocos.push(par([t, run((ETQ[i.etq] || "Anotação").toUpperCase() + ": ", { bold: true, color: "B04A1C" }), run(i.texto)], { shading: sombra("FBEEE5"), indent: { left: 240 } }));
+    else if (i.tipo === "nota") blocos.push(par([t, run((ETQ[i.etq] || "Anotação").toUpperCase() + ": ", { bold: true, color: "B04A1C" }), run(i.texto + (i.resp || i.prazo ? `  (responsável: ${i.resp || "a definir"}; prazo: ${i.prazo || "a definir"})` : ""))], { shading: sombra("FBEEE5"), indent: { left: 240 } }));
     else blocos.push(par([t, run("★ " + ETQ.importante.toUpperCase() + (i.texto ? ": " : ""), { bold: true, color: "B5781E" }), run(i.texto || "", { bold: true })], { shading: sombra("F3E4D8"), indent: { left: 240 } }));
   }
   const doc = new D.Document({ creator: "Gino Terentim · Rethinking Learning", title: R.arquivo, styles: { default: { document: { run: { font: F, size: 22 } } } },

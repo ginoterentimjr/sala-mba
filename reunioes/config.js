@@ -11,5 +11,8 @@ window.REUNIOES = {
   versaoSdk: "6.10.0",
 
   // Segundos anteriores ao clique que o botão "Marcar este momento" destaca na transcrição.
-  janelaDestaque: 30
+  janelaDestaque: 30,
+
+  // Aviso enviado no chat da reunião quando a transcrição começa (reuniões conduzidas como anfitrião).
+  avisoTranscricao: "Aviso: esta reunião está sendo transcrita para o registro da ata. Quem preferir que algum trecho fique fora do registro pode avisar a qualquer momento."
 };
