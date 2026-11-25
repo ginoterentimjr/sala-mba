@@ -20,6 +20,12 @@ window.SALA = {
   titulo: "Aula ao vivo",
   quando: "",
 
+  // Imagem da tela de espera (endereço https). O parâmetro ?espera= do endereço tem prioridade; sem os dois, vale fundos/elegante-06.jpg.
+  espera: "",
+
+  // Endereço da Pionira que recebe a presença dos alunos (POST, texto JSON). Vazio: a página não envia nada.
+  presenca: "",
+
   // Idioma da interface do Zoom.
   idioma: "pt-PT",
 
