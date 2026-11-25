@@ -8,12 +8,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Sala de aula ao vivo do MBA: antessala no padrão da casa; o Zoom (Meeting SDK, client view) ocupa a página ao entrar. */
-:root{--escuro:#1B1512;--claro:#F6F2EC;--creme:#FAF5EC;--tinta:#2A211C;--corpo:#4A3F37;--meta:#8D8377;--laranja:#E5662C;--terra:#B04A1C;--ouro:#C9A24D;--filete:#E2D9CD;--verde:#5E7D52}
-.antessala,.antessala *{box-sizing:border-box;min-width:0}
+/* Sala de aula ao vivo do MBA. Antessala no padrão da casa; na aula, o Zoom (Meeting SDK, client view) ocupa um quadro
+   próprio e o painel ao lado reúne o Caderno da Aula e a fila de mãos levantadas. */
+:root{--escuro:#1B1512;--claro:#F6F2EC;--creme:#FAF5EC;--tinta:#2A211C;--corpo:#4A3F37;--meta:#8D8377;--laranja:#E5662C;--terra:#B04A1C;--ouro:#C9A24D;--filete:#E2D9CD;--verde:#5E7D52;--ambar:#B5781E}
+*{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);font:16px/1.55 Poppins,"Segoe UI",Arial,sans-serif}
-#zmmtg-root{display:none}
 [hidden]{display:none!important}
+button{font-family:inherit}
+
+/* ---- antessala */
 .antessala{min-height:100vh;display:flex;flex-direction:column}
 .antessala header{background:var(--escuro);color:var(--creme);border-top:6px solid var(--ouro);padding:22px max(5vw,18px) 26px}
 .marca{display:flex;align-items:center;gap:18px}
@@ -21,7 +24,6 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
 .olho{font-size:12px;letter-spacing:3px;font-weight:700;color:var(--ouro);text-transform:uppercase}
 .sub{font-size:12px;letter-spacing:2px;color:#BFB3A3;text-transform:uppercase;margin-top:3px}
 .antessala h1{font-size:clamp(26px,4vw,40px);line-height:1.12;margin:20px 0 6px;font-weight:700;text-wrap:balance}
-.antessala h1 em{font-style:normal;color:var(--laranja)}
 .quando{color:#D9CBBE;margin:0}
 .antessala main{flex:1;padding:28px max(5vw,18px) 40px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;max-width:1240px;width:100%;margin:0 auto}
 .cartao{background:#fff;border:1px solid var(--filete);border-radius:10px;padding:26px 28px}
@@ -31,10 +33,13 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
 .antessala label span{font-weight:400;color:var(--meta)}
 .antessala input{width:100%;font:16px Poppins,Arial,sans-serif;padding:12px 14px;border:1.5px solid var(--filete);border-radius:8px;background:var(--creme);color:var(--tinta)}
 .antessala input:focus{outline:none;border-color:var(--laranja);background:#fff}
-.antessala button{font:600 16px Poppins,Arial,sans-serif;border:0;border-radius:28px;padding:14px 28px;cursor:pointer;background:var(--laranja);color:#fff;margin-top:22px;min-height:48px;width:100%}
-.antessala button:hover{background:var(--terra)}
-.antessala button:disabled{opacity:.55;cursor:wait}
-.antessala button:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+.btn{font:600 16px Poppins,Arial,sans-serif;border:0;border-radius:28px;padding:14px 28px;cursor:pointer;background:var(--laranja);color:#fff;min-height:48px}
+.btn:hover{background:var(--terra)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn:focus-visible,.btn2:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+.btn2{font:600 14px Poppins,Arial,sans-serif;border:1.5px solid var(--terra);border-radius:24px;padding:9px 18px;cursor:pointer;background:#fff;color:var(--terra);min-height:40px}
+.btn2:hover{background:#FBEEE5}
+#entrar{width:100%;margin-top:22px}
 .status{margin-top:14px;font-size:14px;min-height:22px}
 .status.erro{color:var(--terra);font-weight:600}
 .status.ok{color:var(--verde);font-weight:600}
@@ -47,26 +52,112 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
 .aviso{background:var(--escuro);color:#D9CBBE;border-radius:10px;padding:16px 20px;font-size:14px;margin-top:18px}
 .aviso b{color:var(--creme)}
 .ola{background:#FBEEE5;border:1px solid #F1D3BF;border-radius:10px;padding:14px 18px;font-size:15px;color:var(--tinta)}
-.ola b{font-weight:700}
 .ola a{color:var(--terra);font-size:13px;white-space:nowrap}
 .fundo-linha{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:6px}
-.antessala .fundo-linha button{width:auto;margin-top:0;min-height:42px;padding:10px 20px;background:#fff;color:var(--terra);border:1.5px solid var(--terra)}
-.antessala .fundo-linha button:hover{background:#FBEEE5}
 .fundo-linha img{height:54px;width:96px;object-fit:cover;border-radius:6px;border:1px solid var(--filete)}
 .fundo-linha a{color:var(--terra);font-size:13px}
 .fundo-nota{font-size:13px;color:var(--corpo);margin:6px 0 0}
-.espera{position:fixed;inset:0;z-index:50;background:var(--escuro);color:var(--creme);font-family:Poppins,"Segoe UI",Arial,sans-serif}
+.saiu{background:#E4EDE0;border:1px solid #C9D9C1;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:15px;color:var(--tinta)}
+.cadernos{margin-top:18px}
+.cadernos li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #EEE7DD;font-size:14px;color:var(--corpo)}
+.cadernos li:last-child{border-bottom:0}
+.cadernos b{display:block;color:var(--tinta);font-size:15px}
+.antessala footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5vw,18px);border-bottom:6px solid var(--ouro);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:820px){.antessala main{grid-template-columns:minmax(0,1fr)}.marca img{height:48px}}
+
+/* ---- espera pelo professor */
+.espera{position:fixed;inset:0;z-index:50;background:var(--escuro);color:var(--creme)}
 .espera img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .espera .faixa{position:absolute;left:0;right:0;bottom:0;padding:48px max(5vw,18px) 30px;background:linear-gradient(to top,rgba(27,21,18,.94),rgba(27,21,18,.72) 62%,rgba(27,21,18,0));display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
 .espera h2{margin:0 0 4px;font-size:clamp(22px,3vw,32px);line-height:1.15;font-weight:700}
 .espera p{margin:0;font-size:15px;color:#D9CBBE}
-.espera .pulso{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--laranja);margin-right:10px;animation:pulso 1.6s ease-in-out infinite}
+.pulso{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--laranja);margin-right:10px;animation:pulso 1.6s ease-in-out infinite}
 @keyframes pulso{50%{opacity:.25}}
+.espera .acoes{display:flex;gap:10px;flex-wrap:wrap}
 .espera button{font:600 14px Poppins,Arial,sans-serif;border:1.5px solid #D9CBBE;background:transparent;color:var(--creme);border-radius:24px;padding:10px 22px;cursor:pointer}
 .espera button:hover{background:rgba(255,255,255,.1)}
-.saiu{background:#E4EDE0;border:1px solid #C9D9C1;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:15px;color:var(--tinta)}
-.antessala footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5vw,18px);border-bottom:6px solid var(--ouro);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media(max-width:820px){.antessala main{grid-template-columns:minmax(0,1fr)}.marca img{height:48px}}
+
+/* ---- sala: Zoom e painel */
+.sala{position:fixed;inset:0;display:flex;background:var(--escuro)}
+.palco{flex:1;position:relative;min-width:0}
+.palco iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:var(--escuro)}
+.fim-aula{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--escuro);color:var(--creme);padding:24px;z-index:2}
+.fim-aula div{max-width:520px;text-align:center}
+.fim-aula h2{font-size:26px;margin:0 0 8px}
+.fim-aula p{color:#D9CBBE;margin:0 0 20px}
+.fim-aula .acoes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.fim-aula .btn2{background:transparent;color:var(--creme);border-color:#D9CBBE}
+.alca{position:absolute;right:12px;top:12px;z-index:3;font:600 13px Poppins,Arial,sans-serif;background:var(--laranja);color:#fff;border:0;border-radius:20px;padding:8px 16px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.painel{width:380px;flex:none;background:var(--claro);display:flex;flex-direction:column;border-left:4px solid var(--ouro);min-height:0}
+.sala.recolhido .painel{display:none}
+.p-topo{background:var(--escuro);color:var(--creme);padding:12px 14px 0}
+.p-linha{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.p-marca{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:2px;font-weight:700;color:var(--ouro);text-transform:uppercase}
+.p-marca img{height:30px}
+.p-fechar{background:transparent;border:0;color:#D9CBBE;font-size:13px;cursor:pointer;padding:6px}
+.abas{display:flex;gap:4px;margin-top:10px}
+.abas button{flex:1;background:transparent;border:0;border-bottom:3px solid transparent;color:#BFB3A3;font:600 14px Poppins,Arial,sans-serif;padding:9px 6px;cursor:pointer}
+.abas button[aria-selected="true"]{color:var(--creme);border-bottom-color:var(--laranja)}
+.abas .ct{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:10px;background:var(--laranja);color:#fff;font-size:12px}
+.aba{flex:1;overflow:auto;padding:14px 14px 18px;min-height:0}
+.estado{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--filete);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--corpo)}
+.estado i{flex:none;width:10px;height:10px;border-radius:50%;background:#CFC5B8;margin-top:5px}
+.estado.vivo i{background:var(--verde);animation:pulso 1.8s ease-in-out infinite}
+.estado.pausa i{background:var(--ambar)}
+.estado b{display:block;color:var(--tinta);font-size:14px}
+.estado button{margin-left:auto;flex:none;background:transparent;border:0;color:var(--terra);font:600 13px Poppins,Arial,sans-serif;cursor:pointer;padding:0 0 0 6px}
+.marcar{width:100%;margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px;font:600 16px Poppins,Arial,sans-serif;background:var(--laranja);color:#fff;border:0;border-radius:12px;padding:14px;cursor:pointer}
+.marcar:hover{background:var(--terra)}
+.marcar.feito{background:var(--verde)}
+.marcar svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linejoin:round}
+.atalho{font-size:12px;color:var(--meta);text-align:center;margin:5px 0 0}
+.anotar{margin-top:12px;background:#fff;border:1px solid var(--filete);border-radius:10px;padding:8px}
+.anotar textarea{width:100%;border:0;resize:vertical;min-height:58px;font:14px/1.45 Poppins,Arial,sans-serif;color:var(--tinta);background:transparent;outline:none}
+.anotar div{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.anotar span{font-size:12px;color:var(--meta)}
+.anotar button{font:600 13px Poppins,Arial,sans-serif;background:var(--escuro);color:var(--creme);border:0;border-radius:18px;padding:7px 16px;cursor:pointer}
+.perdi{width:100%;margin-top:10px}
+.gaveta{margin-top:10px;background:#fff;border:1px solid var(--filete);border-left:4px solid var(--ouro);border-radius:10px;padding:10px 12px}
+.gaveta .chips{display:flex;gap:6px;margin:6px 0 8px}
+.gaveta .chips button{font:600 12px Poppins,Arial,sans-serif;border:1px solid var(--filete);background:var(--creme);color:var(--corpo);border-radius:14px;padding:4px 11px;cursor:pointer}
+.gaveta .chips button[aria-pressed="true"]{background:var(--escuro);color:var(--creme);border-color:var(--escuro)}
+.gaveta h3,.itens h3{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--meta);margin:0;font-weight:700}
+.gaveta .f{font-size:13px;color:var(--corpo);margin:0 0 7px}
+.gaveta .f b{color:#2F6B6F}
+.gaveta .f s{text-decoration:none;color:var(--meta);font-size:11.5px;margin-right:6px}
+.itens{margin-top:16px}
+.item{background:#fff;border:1px solid var(--filete);border-left:4px solid var(--laranja);border-radius:8px;padding:9px 11px;margin-top:8px;font-size:13.5px;color:var(--corpo)}
+.item.marco{border-left-color:var(--ambar)}
+.item .cab{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;color:var(--terra)}
+.item.marco .cab{color:var(--ambar)}
+.item .cab button{background:transparent;border:0;color:var(--meta);font:600 12px Poppins,Arial,sans-serif;cursor:pointer;text-transform:none;letter-spacing:0}
+.item p{margin:4px 0 0;white-space:pre-wrap;color:var(--tinta)}
+.item .tr{margin-top:6px;padding-top:6px;border-top:1px solid #EEE7DD;font-size:12.5px;color:var(--corpo)}
+.vazio{font-size:13px;color:var(--meta);margin:8px 0 0}
+.baixar{width:100%;margin-top:16px}
+.nota-p{font-size:12px;color:var(--meta);margin:8px 0 0;text-align:center}
+.fila-cab{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.fila-cab h3{font-size:16px;margin:0}
+.fila-cab span{font-size:13px;color:var(--meta)}
+.fila{list-style:none;padding:0;margin:12px 0 0;counter-reset:f}
+.fila li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--filete);border-radius:10px;padding:9px 11px;margin-bottom:8px;font-size:14.5px}
+.fila li::before{counter-increment:f;content:counter(f);width:30px;height:30px;border-radius:50%;background:var(--escuro);color:var(--creme);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.fila li:first-child::before{background:var(--laranja)}
+.fila li.eu{border-color:var(--laranja);background:#FBEEE5}
+.fila .nm{font-weight:600;color:var(--tinta);overflow-wrap:anywhere}
+.fila .nm em{font-style:normal;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--terra);margin-left:6px}
+.fila .hd{font-size:12px;color:var(--meta);white-space:nowrap}
+.fila .ant{display:block;font-size:11.5px;font-weight:400;color:var(--meta)}
+.mao{width:100%;margin-top:6px}
+.sala.prof .painel{width:auto;flex:1}
+.sala.prof .palco{flex:0 0 340px}
+.sala.prof .fila li{font-size:22px;padding:14px 16px;grid-template-columns:48px minmax(0,1fr) auto}
+.sala.prof .fila li::before{width:42px;height:42px;font-size:20px}
+.sala.prof .fila .hd{font-size:15px}
+@media(max-width:900px){
+ .painel{position:absolute;right:0;top:0;bottom:0;z-index:4;width:min(380px,92vw);box-shadow:-6px 0 24px rgba(0,0,0,.35)}
+ .sala.prof .painel{width:100%}
+}
 </style>
 </head>
 <body>
@@ -83,7 +174,7 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
   <section class="cartao" aria-labelledby="t-entrar">
    <div class="saiu" id="saiu" hidden>Você saiu da aula. Para voltar, entre novamente abaixo.</div>
    <h2 id="t-entrar">Entrar na aula</h2>
-   <p class="nota">A aula abre aqui mesmo, nesta página: áudio, vídeo, chat, reações e mão levantada, como no Zoom.</p>
+   <p class="nota" id="nota-entrar">A aula abre aqui mesmo, nesta página: áudio, vídeo, chat, reações e mão levantada, como no Zoom, e ao lado o seu Caderno da Aula.</p>
    <form id="form" novalidate>
     <div class="ola" id="ola" hidden><span id="ola-texto"></span> <a href="#" id="trocar">Alterar o nome</a></div>
     <div id="identidade">
@@ -96,50 +187,107 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
     <input id="reuniao" inputmode="numeric" maxlength="13" hidden>
     <label for="senha" id="l-senha" hidden>Senha da reunião</label>
     <input id="senha" hidden>
+    <div id="bloco-fundo">
     <label for="fundo-arquivo">Fundo de tela <span>(opcional)</span></label>
     <div class="fundo-linha">
      <input id="fundo-arquivo" type="file" accept="image/jpeg,image/png" hidden>
-     <button type="button" id="fundo-botao">Usar minha imagem</button>
+     <button type="button" class="btn2" id="fundo-botao">Usar minha imagem</button>
      <img id="fundo-previa" alt="Imagem escolhida para o fundo" hidden>
      <a href="#" id="fundo-tirar" hidden>Retirar</a>
     </div>
-    <p class="fundo-nota" id="fundo-nota">Os fundos do MBA já estão na aula: seta ao lado de Vídeo, Escolher plano de fundo. Para usar uma imagem sua, escolha o arquivo aqui, antes de entrar.</p>
-    <button type="submit" id="entrar">Entrar na aula</button>
+    <p class="fundo-nota" id="fundo-nota"></p>
+    </div>
+    <button type="submit" class="btn" id="entrar">Entrar na aula</button>
    </form>
    <div class="status" id="status" role="status" aria-live="polite"></div>
   </section>
   <aside>
-   <div class="cartao">
+   <div class="cartao" id="cartao-antes">
     <h2>Antes de entrar</h2>
     <ul class="lista">
      <li><span class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><div><b>Computador e navegador atualizado</b>Chrome ou Edge funcionam melhor. No celular, a página também abre.</div></li>
      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></span><div><b>Câmera e microfone liberados</b>Quando o navegador perguntar, clique em Permitir.</div></li>
      <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg></span><div><b>Fones de ouvido</b>Evitam eco para a turma.</div></li>
-     <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><div><b>Chat e mão levantada</b>Use o chat para perguntas e a mão levantada para pedir a palavra.</div></li>
+     <li><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6.5A2.5 2.5 0 0 0 4 21.5"/><path d="M9 7h6M9 11h6"/></svg></span><div><b>Caderno da Aula</b>Marque os momentos importantes, faça anotações e, no fim, baixe o seu caderno em PDF. Ele fica só neste navegador.</div></li>
     </ul>
    </div>
-   <div class="aviso"><b>A aula ainda não começou?</b> A sala abre quando o professor iniciar a reunião. Se aparecer a sala de espera, aguarde: você será admitido.</div>
+   <div class="cartao cadernos" id="cartao-cadernos" hidden>
+    <h2>Meus cadernos</h2>
+    <p class="nota" style="margin-bottom:6px">Cadernos guardados neste navegador.</p>
+    <ul class="lista" id="lista-cadernos"></ul>
+   </div>
+   <div class="aviso" id="aviso-presenca" hidden><b>Presença.</b> A Pionira registra a sua presença nesta aula: entrada, saída e tempo conectado. As anotações do caderno não são enviadas.</div>
+   <div class="aviso"><b>A aula ainda não começou?</b> Entre assim mesmo: a página aguarda o professor abrir a sala e faz a entrada sozinha.</div>
   </aside>
  </main>
  <footer><span id="rodape">MBA Gestão Estratégica de Valor · Sala de aula ao vivo</span><span>A reunião acontece no Zoom, dentro desta página.</span></footer>
+</div>
+
+<div class="sala" id="sala" hidden>
+ <div class="palco" id="palco">
+  <button type="button" class="alca" id="abrir-painel" hidden>Abrir o painel</button>
+  <div class="fim-aula" id="fim-aula" hidden><div>
+   <h2>Você saiu da aula</h2>
+   <p id="fim-texto">O seu caderno está guardado neste navegador.</p>
+   <div class="acoes"><button type="button" class="btn" id="fim-pdf">Baixar meu caderno em PDF</button><button type="button" class="btn2" id="fim-voltar">Entrar de novo</button><button type="button" class="btn2" id="fim-inicio">Voltar ao início</button></div>
+  </div></div>
+ </div>
+ <aside class="painel" id="painel" aria-label="Painel da aula">
+  <div class="p-topo">
+   <div class="p-linha"><div class="p-marca"><img id="p-logo" src="assets/logo-mba.png" alt=""><span id="p-titulo">Painel da aula</span></div><button type="button" class="p-fechar" id="fechar-painel" title="Recolher o painel">Recolher ›</button></div>
+   <div class="abas" role="tablist">
+    <button type="button" role="tab" id="t-caderno" aria-selected="true" aria-controls="aba-caderno">Caderno</button>
+    <button type="button" role="tab" id="t-fila" aria-selected="false" aria-controls="aba-fila">Mãos levantadas<span class="ct" id="ct-fila" hidden>0</span></button>
+   </div>
+  </div>
+  <div class="aba" id="aba-caderno" role="tabpanel">
+   <div class="estado" id="c-estado"><i></i><div><b id="c-estado-t">Aguardando a entrada na aula</b><span id="c-estado-s">O caderno começa quando você entrar.</span></div><button type="button" id="c-pausar" hidden>Pausar</button></div>
+   <button type="button" class="marcar" id="c-marcar"><svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span id="c-marcar-t">Marcar este momento</span></button>
+   <p class="atalho">Guarda os últimos 30 segundos da aula · atalho Alt + M</p>
+   <div class="anotar"><textarea id="c-texto" placeholder="Escreva uma anotação. Enter guarda; Shift + Enter quebra a linha."></textarea><div><span>Alt + N</span><button type="button" id="c-guardar">Guardar anotação</button></div></div>
+   <button type="button" class="btn2 perdi" id="c-perdi" aria-expanded="false">O que eu perdi?</button>
+   <div class="gaveta" id="c-gaveta" hidden>
+    <h3>O que foi dito</h3>
+    <div class="chips" id="c-chips"><button type="button" data-min="2">2 min</button><button type="button" data-min="5" aria-pressed="true">5 min</button><button type="button" data-min="10">10 min</button></div>
+    <div id="c-perdido"></div>
+   </div>
+   <div class="itens"><h3>Momentos e anotações</h3><div id="c-itens"><p class="vazio">Nenhum registro ainda.</p></div></div>
+   <button type="button" class="btn baixar" id="c-pdf">Baixar meu caderno em PDF</button>
+   <p class="nota-p">O caderno fica só neste navegador. Ele registra as legendas da aula enquanto esta página está aberta, para o seu estudo.</p>
+  </div>
+  <div class="aba" id="aba-fila" role="tabpanel" hidden>
+   <div class="fila-cab"><h3>Na ordem em que foram levantadas</h3><span id="f-total"></span></div>
+   <ol class="fila" id="f-lista"></ol>
+   <p class="vazio" id="f-vazio">Nenhuma mão levantada.</p>
+   <button type="button" class="btn mao" id="f-mao">Levantar a mão</button>
+   <p class="nota-p" id="f-nota">A ordem é a da chegada de cada pedido desde a sua entrada. Mãos levantadas antes disso aparecem marcadas.</p>
+  </div>
+ </aside>
 </div>
 
 <div class="espera" id="espera" hidden role="status" aria-live="polite">
  <img id="espera-img" alt="">
  <div class="faixa">
   <div><h2 id="espera-titulo">A aula começa em instantes</h2><p><span class="pulso"></span>A entrada é automática assim que o professor abrir a sala. Mantenha esta página aberta.</p></div>
-  <button type="button" id="espera-sair">Voltar</button>
+  <div class="acoes"><button type="button" id="espera-zoom">Ver a tela do Zoom</button><button type="button" id="espera-sair">Voltar</button></div>
  </div>
 </div>
+
 <script src="config.js"></script>
 <script src="fundos/lista.js"></script>
 <script>
 {
 const C = window.SALA || {};
 const q = new URLSearchParams(location.search);
-// Nome e e-mail do aluno chegam pelo fragmento do endereço (#nome=...&email=...), que não é enviado a nenhum servidor.
+// Nome, e-mail e identificação do aluno chegam pelo fragmento do endereço (#nome=...&email=...&aluno=...), que não é enviado a nenhum servidor.
 const h = new URLSearchParams(location.hash.replace(/^#/, ""));
 const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad = n => String(n).padStart(2, "0");
+const hora = t => { const d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+const VERSAO_QUADRO = "1";
+
 const MARCAS = {
   mba: { logo: "assets/logo-mba.png", icone: "assets/favicon.png", alt: "MBA Gestão Estratégica de Valor",
          olho: "MBA Gestão Estratégica de Valor", sub: "Sala de aula ao vivo",
@@ -149,6 +297,7 @@ const MARCAS = {
          rodape: "Gino Terentim · Rethinking Learning · Sala de aula ao vivo", aba: "Gino Terentim · Rethinking Learning" }
 };
 const limpar = (v, max) => String(v || "").replace(/[<>]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
+const https = v => { try { const u = new URL(v, location.href); return u.protocol === "https:" ? u.href : ""; } catch (e) { return ""; } };
 const P = {
   marca: MARCAS[(q.get("marca") || C.marca || "mba").toLowerCase()] ? (q.get("marca") || C.marca || "mba").toLowerCase() : "mba",
   mn: (q.get("mn") || C.reuniao || "").replace(/\D/g, ""),
@@ -158,12 +307,14 @@ const P = {
   nome: limpar(h.get("nome") || q.get("nome"), 60),
   email: limpar(h.get("email") || q.get("email"), 80),
   // Imagem da tela de espera: ?espera=<endereço https da imagem> tem prioridade sobre a de config.js e sobre a padrão.
-  espera: (() => { for (const v of [q.get("espera"), C.espera, "fundos/elegante-06.jpg"]) { try { const u = new URL(v, location.href); if (u.protocol === "https:") return u.href; } catch (e) {} } return ""; })(),
+  espera: https(q.get("espera")) || https(C.espera) || https("fundos/elegante-06.jpg"),
+  // Modo painel do professor (?modo=painel): entra sem câmera e sem microfone e mostra só a fila de mãos levantadas.
+  prof: q.get("modo") === "painel",
   versao: C.versaoSdk || "6.10.0",
   idioma: C.idioma || "pt-PT"
 };
 const M = MARCAS[P.marca];
-$("logo").src = M.logo; $("logo").alt = M.alt;
+$("logo").src = M.logo; $("logo").alt = M.alt; $("p-logo").src = M.logo;
 $("olho").textContent = M.olho; $("sub").textContent = M.sub; $("rodape").textContent = M.rodape;
 document.querySelector('link[rel="icon"]').href = M.icone;
 document.title = `${P.titulo} · ${M.aba}`;
@@ -172,178 +323,561 @@ $("quando").textContent = P.quando;
 if (q.get("saiu")) $("saiu").hidden = false;
 if (!P.mn) { ["l-reuniao", "reuniao", "l-senha", "senha"].forEach(id => $(id).hidden = false); }
 try { $("nome").value = localStorage.getItem("sala_nome") || ""; $("email").value = localStorage.getItem("sala_email") || ""; } catch (e) {}
-if (P.nome.length >= 3) {
+if (P.prof) {
+  $("sub").textContent = "Painel do professor";
+  $("t-entrar").textContent = "Abrir o painel de mãos levantadas";
+  $("nota-entrar").textContent = "O painel entra na aula sem câmera e sem microfone, com o nome Fila de perguntas, e mostra as mãos levantadas na ordem de chegada. Mantenha esta janela aberta ao lado do Zoom.";
+  $("nome").value = "Fila de perguntas"; $("bloco-fundo").hidden = true; $("entrar").textContent = "Abrir o painel";
+  $("cartao-antes").hidden = true;
+} else if (P.nome.length >= 3) {
   // A plataforma já identificou o aluno: a entrada fica a um clique.
   $("nome").value = P.nome; if (P.email) $("email").value = P.email;
-  const primeiro = P.nome.split(" ")[0];
-  $("ola-texto").innerHTML = "";
-  $("ola-texto").append("Olá, ", Object.assign(document.createElement("b"), { textContent: primeiro }), ". A sua entrada já está pronta.");
+  $("ola-texto").append("Olá, ", Object.assign(document.createElement("b"), { textContent: P.nome.split(" ")[0] }), ". A sua entrada já está pronta.");
   $("ola").hidden = false; $("identidade").hidden = true;
   $("trocar").addEventListener("click", ev => { ev.preventDefault(); $("ola").hidden = true; $("identidade").hidden = false; $("nome").focus(); });
 }
+const status = (t, tipo = "") => { const s = $("status"); s.textContent = t; s.className = "status " + tipo; };
 
-// Fundo de tela: imagem do próprio aluno (fica só neste navegador) e fundos do MBA (fundos/lista.js).
+// ================================================================ fundos de tela
+// A imagem do aluno fica só neste navegador; os fundos do MBA vêm de fundos/lista.js.
+const NOTA_FUNDO = "Os fundos do MBA já estão na aula: seta ao lado de Vídeo, Escolher plano de fundo. Para usar uma imagem sua, escolha o arquivo aqui, antes de entrar.";
+$("fundo-nota").textContent = NOTA_FUNDO;
 let fundoProprio = null;
 $("fundo-botao").addEventListener("click", () => $("fundo-arquivo").click());
 $("fundo-arquivo").addEventListener("change", () => {
   const f = $("fundo-arquivo").files[0];
   if (!f) return;
-  if (!/^image\/(jpeg|png)$/.test(f.type) || f.size > 12 * 1024 * 1024) {
-    $("fundo-nota").textContent = "Escolha uma imagem JPG ou PNG de até 12 MB."; $("fundo-arquivo").value = ""; return;
-  }
-  if (fundoProprio) URL.revokeObjectURL(fundoProprio.url);
-  fundoProprio = { url: URL.createObjectURL(f), nome: f.name };
-  $("fundo-previa").src = fundoProprio.url; $("fundo-previa").hidden = false; $("fundo-tirar").hidden = false;
+  if (!/^image\/(jpeg|png)$/.test(f.type) || f.size > 12 * 1024 * 1024) { $("fundo-nota").textContent = "Escolha uma imagem JPG ou PNG de até 12 MB."; $("fundo-arquivo").value = ""; return; }
+  if (fundoProprio) URL.revokeObjectURL(fundoProprio.previa);
+  fundoProprio = { arquivo: f, previa: URL.createObjectURL(f) };
+  $("fundo-previa").src = fundoProprio.previa; $("fundo-previa").hidden = false; $("fundo-tirar").hidden = false;
   $("fundo-nota").textContent = "Imagem pronta. Na aula, ela será a primeira opção em Escolher plano de fundo (seta ao lado de Vídeo).";
 });
 $("fundo-tirar").addEventListener("click", ev => {
   ev.preventDefault();
-  if (fundoProprio) URL.revokeObjectURL(fundoProprio.url);
+  if (fundoProprio) URL.revokeObjectURL(fundoProprio.previa);
   fundoProprio = null; $("fundo-arquivo").value = "";
-  $("fundo-previa").hidden = true; $("fundo-tirar").hidden = true;
-  $("fundo-nota").textContent = "Os fundos do MBA já estão na aula: seta ao lado de Vídeo, Escolher plano de fundo. Para usar uma imagem sua, escolha o arquivo aqui, antes de entrar.";
+  $("fundo-previa").hidden = true; $("fundo-tirar").hidden = true; $("fundo-nota").textContent = NOTA_FUNDO;
 });
-function listaDeFundos(versao) {
+function fundosDoMba() {
+  if (P.marca !== "mba") return [];
   const base = new URL("fundos/", location.href).href;
-  const lista = [];
-  if (fundoProprio) lista.push({ id: "minha", displayName: "Minha imagem", fileName: "minha-imagem.jpg", url: fundoProprio.url });
-  lista.push({ id: "blur", displayName: "blur", fileName: "blur.png", url: `https://source.zoom.us/${versao}/lib/image/blur.png` });
-  for (const f of (window.FUNDOS || [])) lista.push({ id: f.id, displayName: f.displayName, fileName: f.fileName, url: base + f.fileName });
-  return lista;
-}
-// O Zoom só aceita a lista antes de o participante mexer no fundo pelo menu: por isso ela é entregue logo na entrada.
-// Entrega da lista ao Zoom. A pré-visualização só mostra a lista entregue depois de montada, e repetir a entrega
-// depois que a pessoa escolheu um fundo descarta a escolha. Por isso: uma entrega na abertura, uma assim que a
-// pré-visualização aparece e, na entrada, só se o Zoom ainda não tiver a lista.
-function entregarFundos(Z, versao, tentativa = 0) {
-  if (P.marca !== "mba" && !fundoProprio) return;
-  const vbList = P.marca === "mba" ? listaDeFundos(versao) : listaDeFundos(versao).slice(0, 2);
-  try {
-    Z.updateVirtualBackgroundList({ vbList, success: () => {}, error: () => { if (tentativa < 3) setTimeout(() => entregarFundos(Z, versao, tentativa + 1), 1500); } });
-  } catch (e) {}
-}
-function entregarNaPrevia(Z, versao) {
-  let voltas = 0;
-  const olhar = setInterval(() => {
-    const raiz = $("zmmtg-root");
-    const previa = raiz && (raiz.querySelector('[class*="preview"]') || [...raiz.querySelectorAll("button")].find(b => /plano|fundo|background/i.test(b.textContent)));
-    if (previa) { clearInterval(olhar); entregarFundos(Z, versao); }
-    else if (++voltas > 150) clearInterval(olhar);
-  }, 200);
-  return () => clearInterval(olhar);
-}
-function entregarSeFaltar(Z, versao) {
-  try {
-    Z.getVirtualBackgroundStatus({
-      success: r => { const ids = ((r && r.result && r.result.vbList) || []).map(v => v.id); if (!ids.includes("elegante01") && !ids.includes("minha")) entregarFundos(Z, versao); },
-      error: () => entregarFundos(Z, versao)
-    });
-  } catch (e) {}
+  return (window.FUNDOS || []).map(f => ({ id: f.id, displayName: f.displayName, fileName: f.fileName, url: base + f.fileName }));
 }
 
-const status = (t, tipo = "") => { const s = $("status"); s.textContent = t; s.className = "status " + tipo; };
+// ================================================================ entrada, espera e quadro do Zoom
 const ERROS = {
-  3008: "A aula ainda não começou. Aguarde o professor abrir a sala e tente de novo.",
-  3001: "A aula ainda não começou. Aguarde o professor abrir a sala e tente de novo.",
   3004: "A senha da reunião não confere. Confira o endereço recebido na Pionira.",
   3706: "O número da reunião não confere. Confira o endereço recebido na Pionira.",
   3707: "O número da reunião não confere. Confira o endereço recebido na Pionira.",
-  3712: "A assinatura da sala é inválida. Avise o professor: o Worker precisa ser revisto.",
+  3712: "A assinatura da sala é inválida. Avise o professor: o serviço de assinatura precisa ser revisto.",
   3000: "Não foi possível entrar agora. Recarregue a página e tente de novo."
 };
-const msgErro = e => {
-  const cod = e && (e.errorCode ?? e.code);
-  return (ERROS[cod] || "Não foi possível entrar na aula.") + (cod ? ` (código ${cod})` : "");
-};
+const NAO_COMECOU = [3008, 3001, 3139];
+let quadro = null, dadosEntrada = null, dentro = false, ultimaTentativa = null, esperaDesde = 0, esperaRelogio = null;
 
-function carregar(src) {
-  return new Promise((ok, falha) => {
-    const s = document.createElement("script");
-    s.src = src; s.onload = ok; s.onerror = () => falha(new Error("Falha ao carregar " + src));
-    document.head.appendChild(s);
-  });
+function novoQuadro() {
+  if (quadro) quadro.remove();
+  quadro = document.createElement("iframe");
+  quadro.title = "Zoom";
+  quadro.allow = "camera; microphone; display-capture; autoplay; clipboard-write; fullscreen; picture-in-picture";
+  quadro.src = "aula/zoom.html?v=" + VERSAO_QUADRO;
+  quadro.addEventListener("load", ligarAtalhosNoQuadro);
+  $("palco").prepend(quadro);
 }
-async function carregarZoom(v) {
-  if (window.ZoomMtg) return;
-  const base = `https://source.zoom.us/${v}/lib/vendor/`;
-  for (const f of ["react.min.js", "react-dom.min.js", "redux.min.js", "redux-thunk.min.js", "lodash.min.js"]) await carregar(base + f);
-  await carregar(`https://source.zoom.us/zoom-meeting-${v}.min.js`);
+function abrirSala() {
+  $("antessala").hidden = true; $("sala").hidden = false; $("fim-aula").hidden = true;
+  $("sala").classList.toggle("prof", P.prof);
+  if (window.innerWidth < 900 && !P.prof) recolher(true);
 }
-function enderecoDeSaida() {
-  const u = new URL(location.href);
-  u.searchParams.set("saiu", "1");
-  return u.toString();
-}
-function voltarAntessala() {
-  $("antessala").style.display = "";
-  const r = $("zmmtg-root"); if (r) r.style.display = "none";
-  $("entrar").disabled = false;
-}
-
-// Tela de espera: enquanto a reunião não começa, a página mostra a imagem e tenta a entrada de novo a cada 20 segundos.
-const NAO_COMECOU = [3008, 3001];
-let esperaRelogio = null;
-function aguardar() {
-  voltarAntessala(); status("");
-  $("espera-img").src = P.espera; $("espera-titulo").textContent = P.titulo && P.titulo !== "Aula ao vivo" ? P.titulo + ": começa em instantes" : "A aula começa em instantes";
-  $("espera").hidden = false; $("antessala").style.display = "none";
-  clearTimeout(esperaRelogio);
-  esperaRelogio = setTimeout(() => entrar(true), 20000);
-}
-function sairDaEspera() { clearTimeout(esperaRelogio); esperaRelogio = null; $("espera").hidden = true; }
-$("espera-sair").addEventListener("click", () => { sairDaEspera(); voltarAntessala(); status("A aula ainda não começou. Entre de novo quando quiser.", ""); });
-function falhou(e) {
-  const cod = e && (e.errorCode ?? e.code);
-  if (NAO_COMECOU.includes(cod)) { aguardar(); return; }
-  sairDaEspera(); voltarAntessala(); status(msgErro(e), "erro");
+function voltarAntessala(msg, tipo) {
+  pararEspera();
+  if (quadro) { quadro.remove(); quadro = null; }
+  dentro = false;
+  $("sala").hidden = true; $("antessala").hidden = false; $("entrar").disabled = false;
+  listarCadernos();
+  if (msg) status(msg, tipo);
 }
 
 $("form").addEventListener("submit", ev => { ev.preventDefault(); entrar(false); });
-async function entrar(emEspera) {
+async function entrar(semPrevia) {
   const nome = $("nome").value.trim(), email = $("email").value.trim();
   const mn = P.mn || $("reuniao").value.replace(/\D/g, "");
   const pwd = P.mn ? P.pwd : $("senha").value.trim();
   if (nome.length < 3) { status("Escreva o seu nome completo para entrar.", "erro"); $("nome").focus(); return; }
   if (!/^\d{9,12}$/.test(mn)) { status("Informe o número da reunião, com 9 a 12 dígitos.", "erro"); return; }
-  try { localStorage.setItem("sala_nome", nome); localStorage.setItem("sala_email", email); } catch (e) {}
+  if (!P.prof) try { localStorage.setItem("sala_nome", nome); localStorage.setItem("sala_email", email); } catch (e) {}
   $("entrar").disabled = true;
   try {
     status("Preparando a sala…");
     const r = await fetch(C.assinatura, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ meetingNumber: mn }) });
     const dados = await r.json().catch(() => ({}));
     if (!r.ok || !dados.signature) throw new Error(dados.error || "A assinatura da sala não foi gerada.");
-    status("Carregando o Zoom…");
-    await carregarZoom(P.versao);
-    const Z = window.ZoomMtg;
-    Z.setZoomJSLib(`https://source.zoom.us/${P.versao}/lib`, "/av");
-    Z.preLoadWasm();
-    Z.prepareWebSDK();
-    try { await Promise.resolve(Z.i18n.load(P.idioma)); await Promise.resolve(Z.i18n.reload(P.idioma)); } catch (e) {}
-    $("antessala").style.display = "none";
-    const raiz = $("zmmtg-root"); if (raiz) raiz.style.display = emEspera ? "none" : "block";
-    Z.init({
-      leaveUrl: enderecoDeSaida(),
-      patchJsMedia: true,
-      leaveOnPageUnload: true,
-      disableInvite: true,
-      success: () => { entregarFundos(Z, P.versao); const pararPrevia = entregarNaPrevia(Z, P.versao); Z.join({
-        signature: dados.signature,
-        sdkKey: dados.sdkKey || C.clientId,
-        meetingNumber: mn,
-        passWord: pwd,
-        userName: nome,
-        userEmail: email,
-        success: () => { sairDaEspera(); const r2 = $("zmmtg-root"); if (r2) r2.style.display = "block"; pararPrevia(); entregarSeFaltar(Z, P.versao); },
-        error: falhou
-      }); },
-      error: falhou
-    });
+    status("");
+    ultimaTentativa = { nome, email, mn, pwd };
+    dadosEntrada = {
+      signature: dados.signature, sdkKey: dados.sdkKey || C.clientId, mn, pwd, nome, email,
+      versao: P.versao, idioma: P.idioma, semPrevia: semPrevia || P.prof, semAV: P.prof,
+      fundos: P.prof ? [] : fundosDoMba(), imagemPropria: (!P.prof && fundoProprio) ? fundoProprio.arquivo : null
+    };
+    abrirSala(); novoQuadro();
   } catch (e) {
-    if (emEspera) { aguardar(); return; }
-    voltarAntessala();
-    status((e && e.message) ? e.message : "Não foi possível entrar na aula.", "erro");
+    if (semPrevia) { agendarNovaTentativa(); return; }
+    voltarAntessala((e && e.message) ? e.message : "Não foi possível entrar na aula.", "erro");
   }
 }
+
+// Espera pelo professor. Normalmente o próprio Zoom aguarda o anfitrião e entra sozinho; a página cobre essa espera
+// com a imagem da aula. Se o Zoom recusar a entrada por a reunião não ter começado, a página tenta de novo a cada 20 segundos.
+function mostrarEspera() {
+  $("espera-img").src = P.espera;
+  $("espera-titulo").textContent = P.titulo && P.titulo !== "Aula ao vivo" ? P.titulo + ": começa em instantes" : "A aula começa em instantes";
+  $("espera").hidden = false;
+  if (!esperaDesde) esperaDesde = Date.now();
+}
+function esconderEspera() { $("espera").hidden = true; }
+function pararEspera() { clearTimeout(esperaRelogio); esperaRelogio = null; esperaDesde = 0; esconderEspera(); }
+function agendarNovaTentativa() {
+  mostrarEspera();
+  if (Date.now() - esperaDesde > 90 * 60000) { voltarAntessala("A aula não começou nos últimos 90 minutos. Confira o horário e entre de novo.", "erro"); return; }
+  clearTimeout(esperaRelogio);
+  esperaRelogio = setTimeout(() => entrar(true), 20000);
+}
+$("espera-sair").addEventListener("click", () => voltarAntessala("Você saiu da espera. Entre de novo quando quiser."));
+$("espera-zoom").addEventListener("click", esconderEspera);
+
+window.addEventListener("message", ev => {
+  if (ev.origin !== location.origin || !quadro || ev.source !== quadro.contentWindow) return;
+  const m = ev.data || {};
+  if (m.sala !== "aula") return;
+  switch (m.tipo) {
+    case "pronto": if (dadosEntrada) quadro.contentWindow.postMessage({ sala: "aula", tipo: "entrar", dados: dadosEntrada }, location.origin); break;
+    case "aguardando": if (m.valor) mostrarEspera(); else esconderEspera(); break;
+    case "entrou": entrou(m.eu); break;
+    case "erro": {
+      if (NAO_COMECOU.includes(Number(m.codigo))) { agendarNovaTentativa(); break; }
+      const cod = m.codigo;
+      voltarAntessala((ERROS[cod] || m.mensagem || "Não foi possível entrar na aula.") + (cod ? ` (código ${cod})` : ""), "erro");
+      break;
+    }
+    case "legenda": if (m.fonte === "sdk") legendaSdk(m.bruto); else legendaTela(m.linhas || []); break;
+    case "falante": falanteDe(m.bruto); break;
+    case "participantes": receberParticipantes(m.lista || []); break;
+    case "sala-simultanea": mudarSala(m); break;
+    case "aviso": $("f-nota").textContent = m.mensagem || ""; break;
+    case "saiu": saiu(); break;
+  }
+});
+
+function entrou() {
+  pararEspera();
+  dentro = true;
+  $("fim-aula").hidden = true;
+  if (!P.prof) { abrirCaderno(dadosEntrada.mn, dadosEntrada.nome); presenca("entrada"); }
+  else { trocarAba("fila"); $("t-caderno").hidden = true; $("p-titulo").textContent = "Painel do professor"; $("fechar-painel").hidden = true; $("f-mao").hidden = true; }
+  desenharEstado();
+}
+function saiu() {
+  if (!dentro) return;
+  dentro = false; salaSimultanea = null;
+  if (S) { S.fim = Date.now(); gravarJa(); }
+  presenca("saida");
+  $("fim-texto").textContent = S && (S.itens.length || S.falas.length)
+    ? `O seu caderno está guardado neste navegador: ${S.itens.filter(i => i.tipo === "marco").length} momentos marcados e ${S.itens.filter(i => i.tipo === "nota").length} anotações.`
+    : "O seu caderno está guardado neste navegador.";
+  $("fim-pdf").hidden = P.prof;
+  $("fim-aula").hidden = false;
+  desenharEstado();
+}
+$("fim-voltar").addEventListener("click", () => { if (ultimaTentativa) entrar(false); });
+$("fim-inicio").addEventListener("click", () => voltarAntessala());
+$("fim-pdf").addEventListener("click", () => abrirPdf(S));
+
+// ---- painel: abas e recolhimento
+function trocarAba(qual) {
+  $("t-caderno").setAttribute("aria-selected", qual === "caderno"); $("t-fila").setAttribute("aria-selected", qual === "fila");
+  $("aba-caderno").hidden = qual !== "caderno"; $("aba-fila").hidden = qual !== "fila";
+}
+$("t-caderno").addEventListener("click", () => trocarAba("caderno"));
+$("t-fila").addEventListener("click", () => trocarAba("fila"));
+function recolher(sim) { $("sala").classList.toggle("recolhido", sim); $("abrir-painel").hidden = !sim; }
+$("fechar-painel").addEventListener("click", () => recolher(true));
+$("abrir-painel").addEventListener("click", () => recolher(false));
+
+// ---- atalhos (também quando o foco está no Zoom, que fica no mesmo endereço)
+function atalho(e) {
+  if (!e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.code === "KeyM") { e.preventDefault(); marcar(); }
+  else if (e.code === "KeyN") { e.preventDefault(); recolher(false); trocarAba("caderno"); $("c-texto").focus(); }
+}
+document.addEventListener("keydown", atalho);
+function ligarAtalhosNoQuadro() { try { quadro.contentWindow.document.addEventListener("keydown", atalho); } catch (e) {} }
+
+// ================================================================ Caderno da Aula
+let S = null, gravarId = null, fonteSdk = false, falante = "", pausadoPorVoce = false, salaSimultanea = null, ultimaFala = 0;
+const nomesPorId = new Map();
+const vistos = new Set();
+const INDICE = "aula:indice";
+const lerJson = (k, padrao) => { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? padrao; } catch (e) { return padrao; } };
+
+function abrirCaderno(mn, nome) {
+  const d = new Date();
+  const id = `${mn}-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  // Reentrar no mesmo dia continua o mesmo caderno.
+  if (!S || S.id !== id) S = lerJson("aula:c:" + id, null) || { id, mn, titulo: P.titulo, nome, inicio: Date.now(), falas: [], itens: [] };
+  if (P.titulo !== "Aula ao vivo") S.titulo = P.titulo;
+  S.nome = nome; S.marca = P.marca; delete S.fim;
+  gravarJa(); desenharItens(); desenharEstado();
+}
+function gravarJa() {
+  if (!S) return;
+  if (S.falas.length > 6000) S.falas = S.falas.slice(-6000);
+  try {
+    localStorage.setItem("aula:c:" + S.id, JSON.stringify(S));
+    const indice = lerJson(INDICE, []).filter(i => i.id !== S.id);
+    indice.unshift({ id: S.id, titulo: S.titulo, inicio: S.inicio, marcos: S.itens.filter(i => i.tipo === "marco").length, notas: S.itens.filter(i => i.tipo === "nota").length });
+    for (const velho of indice.splice(30)) localStorage.removeItem("aula:c:" + velho.id);
+    localStorage.setItem(INDICE, JSON.stringify(indice));
+  } catch (e) { $("c-estado-s").textContent = "O navegador não tem espaço para guardar o caderno. Baixe o PDF para não perder os registros."; }
+}
+function gravar() { clearTimeout(gravarId); gravarId = setTimeout(gravarJa, 1000); }
+function registrando() { return !!S && dentro && !pausadoPorVoce && !salaSimultanea; }
+
+// ---- legendas recebidas do quadro do Zoom
+function textoDe(b) { return String(b.text ?? b.msg ?? b.message ?? b.content ?? b.transcription ?? b.caption ?? "").trim(); }
+function nomeDe(b) { return String(b.displayName ?? b.userName ?? b.speakerName ?? b.name ?? nomesPorId.get(b.userId ?? b.speakerId ?? b.userID) ?? "").trim(); }
+function legendaSdk(bruto) {
+  const lista = Array.isArray(bruto) ? bruto : [bruto];
+  for (const b of lista) {
+    if (!b || typeof b !== "object") continue;
+    const texto = textoDe(b); if (!texto) continue;
+    fonteSdk = true;
+    const chave = b.msgId ?? b.msgID ?? b.messageId ?? b.id ?? null;
+    registrarFala(nomeDe(b) || falante, texto, chave != null ? "sdk:" + chave : null);
+  }
+}
+function legendaTela(linhas) {
+  if (fonteSdk) return;
+  for (const l of linhas) if (l.texto) registrarFala(l.nome || falante, l.texto.replace(/\s+/g, " ").trim(), null);
+}
+function falanteDe(b) {
+  const x = Array.isArray(b) ? b[0] : b;
+  if (x && typeof x === "object") falante = String(x.userName ?? x.displayName ?? nomesPorId.get(x.userId) ?? falante);
+}
+function registrarFala(quem, texto, chave) {
+  if (!registrando()) return;
+  const agora = Date.now();
+  const recentes = S.falas.slice(-30);
+  let alvo = null;
+  if (chave) alvo = recentes.find(i => i.chave === chave);
+  else {
+    const marca = quem + "\u0001" + texto;
+    if (vistos.has(marca)) return;
+    vistos.add(marca);
+    // A legenda cresce enquanto a pessoa fala: a nova versão de uma mesma fala substitui a anterior.
+    alvo = recentes.slice(-4).reverse().find(i => !i.chave && agora - (i.u ?? i.t) < 20000 && (!quem || !i.quem || i.quem === quem) && (texto.startsWith(i.texto) || i.texto.startsWith(texto)));
+  }
+  ultimaFala = agora;
+  if (alvo) {
+    alvo.u = agora;
+    if (texto !== alvo.texto && (chave || texto.length >= alvo.texto.length)) { alvo.texto = texto; if (quem && !alvo.quem) alvo.quem = quem; }
+  } else S.falas.push({ t: agora, u: agora, quem: quem || "", texto, chave: chave || undefined });
+  gravar(); desenharEstado();
+  if (!$("c-gaveta").hidden) desenharPerdido();
+}
+
+// ---- estado do caderno
+function desenharEstado() {
+  const e = $("c-estado"), t = $("c-estado-t"), s = $("c-estado-s"), b = $("c-pausar");
+  e.className = "estado"; b.hidden = !S || !dentro || !!salaSimultanea;
+  b.textContent = pausadoPorVoce ? "Retomar" : "Pausar";
+  if (!dentro) { t.textContent = S ? "Aula encerrada para você" : "Aguardando a entrada na aula"; s.textContent = S ? "O caderno está guardado. Baixe o PDF quando quiser." : "O caderno começa quando você entrar."; return; }
+  if (salaSimultanea) { e.classList.add("pausa"); t.textContent = "Pausado na sala simultânea" + (salaSimultanea.nome ? `: ${salaSimultanea.nome}` : ""); s.textContent = "As conversas do grupo não entram no caderno. O registro volta quando você retornar à sala principal. As suas anotações continuam disponíveis."; return; }
+  if (pausadoPorVoce) { e.classList.add("pausa"); t.textContent = "Registro pausado por você"; s.textContent = "As falas deste trecho não entram no caderno."; return; }
+  if (Date.now() - ultimaFala < 90000) { e.classList.add("vivo"); t.textContent = "Registrando as falas da aula"; s.textContent = "As legendas do Zoom estão chegando ao caderno."; return; }
+  t.textContent = "Aguardando as legendas";
+  s.textContent = "Para o caderno registrar as falas, as legendas precisam estar ativas no Zoom (botão Legendas, Mostrar legendas). Marcações e anotações funcionam mesmo sem elas.";
+}
+setInterval(desenharEstado, 15000);
+$("c-pausar").addEventListener("click", () => { pausadoPorVoce = !pausadoPorVoce; desenharEstado(); });
+
+// ---- sala simultânea: o caderno pausa sozinho
+function mudarSala(m) {
+  const antes = !!salaSimultanea;
+  salaSimultanea = m.emSala ? { nome: m.nome || "" } : null;
+  if (!antes && m.emSala) PR.salas++;
+  if (antes !== !!salaSimultanea) { limparFila(); desenharEstado(); }
+}
+
+// ---- marcações e anotações
+function marcar() {
+  if (!S || P.prof) return;
+  const agora = Date.now();
+  const trecho = S.falas.filter(f => (f.u ?? f.t) >= agora - 30000).map(f => ({ t: f.t, quem: f.quem, texto: f.texto }));
+  const nota = $("c-texto").value.trim();
+  S.itens.push({ id: uid(), tipo: "marco", t: agora, texto: nota, trecho, sala: salaSimultanea ? (salaSimultanea.nome || "Sala simultânea") : "" });
+  if (nota) $("c-texto").value = "";
+  PR.marcos++;
+  gravarJa(); desenharItens();
+  const b = $("c-marcar"); b.classList.add("feito");
+  $("c-marcar-t").textContent = trecho.length ? `Momento marcado com ${trecho.length} ${trecho.length === 1 ? "fala" : "falas"}` : "Momento marcado";
+  setTimeout(() => { b.classList.remove("feito"); $("c-marcar-t").textContent = "Marcar este momento"; }, 1800);
+}
+function anotar() {
+  if (!S) return;
+  const texto = $("c-texto").value.trim();
+  if (!texto) { $("c-texto").focus(); return; }
+  S.itens.push({ id: uid(), tipo: "nota", t: Date.now(), texto, sala: salaSimultanea ? (salaSimultanea.nome || "Sala simultânea") : "" });
+  $("c-texto").value = "";
+  PR.notas++;
+  gravarJa(); desenharItens();
+}
+$("c-marcar").addEventListener("click", marcar);
+$("c-guardar").addEventListener("click", anotar);
+$("c-texto").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); anotar(); } });
+
+// Trecho de um momento marcado: as falas finais dos 30 segundos anteriores à marcação.
+function trechoDe(c, item) {
+  const doCaderno = c.falas.filter(f => (f.u ?? f.t) >= item.t - 30000 && f.t <= item.t + 2000).map(f => ({ t: f.t, quem: f.quem, texto: f.texto }));
+  return doCaderno.length ? doCaderno : (item.trecho || []);
+}
+const confirmar = new Map();
+function desenharItens() {
+  const alvo = $("c-itens");
+  if (!S || !S.itens.length) { alvo.innerHTML = '<p class="vazio">Nenhum registro ainda.</p>'; return; }
+  alvo.innerHTML = S.itens.slice().reverse().map(i => {
+    const tr = i.tipo === "marco" ? trechoDe(S, i) : [];
+    return `<div class="item ${i.tipo}" data-id="${i.id}"><div class="cab"><span>${i.tipo === "marco" ? "★ Momento marcado" : "Anotação"} · ${hora(i.t)}${i.sala ? " · " + esc(i.sala) : ""}</span><button type="button" data-apagar="${i.id}">${confirmar.has(i.id) ? "Confirmar exclusão" : "Excluir"}</button></div>`
+      + (i.texto ? `<p>${esc(i.texto)}</p>` : "")
+      + (tr.length ? `<div class="tr">${tr.slice(-3).map(f => `<div>${f.quem ? `<b>${esc(f.quem)}:</b> ` : ""}${esc(f.texto.length > 220 ? "…" + f.texto.slice(-220) : f.texto)}</div>`).join("")}</div>` : "")
+      + "</div>";
+  }).join("");
+}
+$("c-itens").addEventListener("click", e => {
+  const id = e.target.getAttribute && e.target.getAttribute("data-apagar");
+  if (!id) return;
+  if (confirmar.has(id)) { S.itens = S.itens.filter(i => i.id !== id); confirmar.delete(id); gravarJa(); }
+  else { confirmar.set(id, setTimeout(() => { confirmar.delete(id); desenharItens(); }, 4000)); }
+  desenharItens();
+});
+
+// ---- "O que eu perdi?"
+let minutosPerdidos = 5;
+function corrido(falas) {
+  const out = [];
+  for (const f of falas) {
+    const ult = out[out.length - 1];
+    if (ult && ult.quem === f.quem && f.t - ult.u < 15000) { ult.texto += " " + f.texto; ult.u = f.u ?? f.t; }
+    else out.push({ t: f.t, u: f.u ?? f.t, quem: f.quem, texto: f.texto });
+  }
+  return out;
+}
+function desenharPerdido() {
+  const desde = Date.now() - minutosPerdidos * 60000;
+  const falas = S ? corrido(S.falas.filter(f => (f.u ?? f.t) >= desde)) : [];
+  $("c-perdido").innerHTML = falas.length
+    ? falas.map(f => `<p class="f"><s>${hora(f.t)}</s>${f.quem ? `<b>${esc(f.quem)}:</b> ` : ""}${esc(f.texto)}</p>`).join("")
+    : `<p class="vazio">Nenhuma fala registrada nos últimos ${minutosPerdidos} minutos. O caderno depende das legendas ativas no Zoom.</p>`;
+}
+$("c-perdi").addEventListener("click", () => {
+  const abrir = $("c-gaveta").hidden;
+  $("c-gaveta").hidden = !abrir; $("c-perdi").setAttribute("aria-expanded", abrir);
+  $("c-perdi").textContent = abrir ? "Fechar o resumo" : "O que eu perdi?";
+  if (abrir) desenharPerdido();
+});
+$("c-chips").addEventListener("click", e => {
+  const m = e.target.getAttribute && e.target.getAttribute("data-min"); if (!m) return;
+  minutosPerdidos = Number(m);
+  for (const b of $("c-chips").querySelectorAll("button")) b.setAttribute("aria-pressed", b === e.target);
+  desenharPerdido();
+});
+
+// ---- Meus cadernos (antessala)
+function listarCadernos() {
+  if (P.prof) return;
+  const indice = lerJson(INDICE, []).slice(0, 6);
+  $("cartao-cadernos").hidden = !indice.length;
+  $("lista-cadernos").innerHTML = indice.map(i => {
+    const d = new Date(i.inicio);
+    return `<li><div><b>${esc(i.titulo)}</b>${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} · ${i.marcos} momentos · ${i.notas} anotações</div><button type="button" class="btn2" data-pdf="${esc(i.id)}">PDF</button></li>`;
+  }).join("");
+}
+$("lista-cadernos").addEventListener("click", e => {
+  const id = e.target.getAttribute && e.target.getAttribute("data-pdf"); if (!id) return;
+  const c = lerJson("aula:c:" + id, null);
+  if (c) abrirPdf(c);
+});
+listarCadernos();
+
+// ================================================================ PDF do caderno
+$("c-pdf").addEventListener("click", () => abrirPdf(S));
+function abrirPdf(c) {
+  if (!c) return;
+  const j = window.open("", "_blank");
+  if (!j) { alertaPainel("O navegador bloqueou a nova aba. Libere as janelas desta página e clique de novo."); return; }
+  j.document.open(); j.document.write(documentoHtml(c)); j.document.close();
+}
+function alertaPainel(t) { $("c-estado-s").textContent = t; status(t, "erro"); }
+
+function documentoHtml(c) {
+  const marca = MARCAS[c.marca] || MARCAS.mba;
+  const logo = new URL(marca.logo, location.href).href;
+  const marcos = c.itens.filter(i => i.tipo === "marco"), notas = c.itens.filter(i => i.tipo === "nota");
+  const ini = c.falas.length ? Math.min(c.inicio, c.falas[0].t) : c.inicio;
+  const fimT = Math.max(c.fim || 0, ...c.falas.map(f => f.u ?? f.t), ...c.itens.map(i => i.t), ini + 60000);
+  const dur = fimT - ini;
+  const d = new Date(ini);
+  const data = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  const janelas = marcos.map(m => [m.t - 30000, m.t + 2000]);
+  const destacada = f => janelas.some(([a, b]) => (f.u ?? f.t) >= a && f.t <= b);
+  const linhas = corrido(c.falas).map(f => ({ ...f, tipo: "fala", dest: destacada(f) }));
+  const fluxo = linhas.concat(c.itens).sort((a, b) => a.t - b.t);
+  const x = t => 20 + Math.min(1, Math.max(0, (t - ini) / dur)) * 620;
+  const regua = `<svg viewBox="0 0 660 76" style="width:174mm;height:20mm;display:block" font-family="Poppins,Arial,sans-serif"><line x1="20" y1="34" x2="640" y2="34" stroke="#2A211C" stroke-width="2" stroke-linecap="round"/>`
+    + c.falas.map(f => `<rect x="${x(f.t).toFixed(1)}" y="${destacada(f) ? 22 : 28}" width="2" height="${destacada(f) ? 24 : 12}" fill="${destacada(f) ? "#B5781E" : "#CFC5B8"}"/>`).join("")
+    + c.itens.map(i => `<circle cx="${x(i.t).toFixed(1)}" cy="34" r="7" fill="${i.tipo === "marco" ? "#B5781E" : "#E5662C"}" stroke="#F6F2EC" stroke-width="2"/>`).join("")
+    + [0, .25, .5, .75, 1].map(f => { const xx = (20 + f * 620).toFixed(1); return `<line x1="${xx}" y1="46" x2="${xx}" y2="52" stroke="#8D8377"/><text x="${xx}" y="68" text-anchor="middle" font-size="12" fill="#8D8377">${hora(ini + f * dur)}</text>`; }).join("")
+    + "</svg>";
+  const n = (v, r, cor) => `<div class="n"><span class="dk" style="background:${cor}"></span><div><b>${v}</b><span>${r}</span></div></div>`;
+  const cartao = i => {
+    const tr = i.tipo === "marco" ? trechoDe(c, i) : [];
+    return `<div class="d${i.tipo === "marco" ? " m" : ""}"><div class="dh"><span class="e">${i.tipo === "marco" ? "★ Momento marcado" : "Anotação"}${i.sala ? " · " + esc(i.sala) : ""}</span><span class="t">${hora(i.t)}</span></div>`
+      + (i.texto ? `<p class="tx">${esc(i.texto)}</p>` : "")
+      + (tr.length ? `<div class="c"><span>O que estava sendo dito</span>${corrido(tr).map(f => `<p>${f.quem ? `<b>${esc(f.quem)}:</b> ` : ""}${esc(f.texto)}</p>`).join("")}</div>` : (i.tipo === "marco" ? '<div class="c"><span>O que estava sendo dito</span><p>Sem legendas registradas neste momento.</p></div>' : ""))
+      + "</div>";
+  };
+  const linha = i => {
+    if (i.tipo === "fala") return `<div class="l${i.dest ? " dest" : ""}"><span class="t">${hora(i.t)}</span><div>${i.quem ? `<b>${esc(i.quem)}</b>` : ""}<p>${esc(i.texto)}</p></div></div>`;
+    if (i.tipo === "nota") return `<div class="l nota"><span class="t">${hora(i.t)}</span><div><span class="e">Anotação</span><p>${esc(i.texto)}</p></div></div>`;
+    return `<div class="l marco"><span class="t">${hora(i.t)}</span><div><span class="e">★ Momento marcado</span>${i.texto ? `<p>${esc(i.texto)}</p>` : ""}</div></div>`;
+  };
+  const arquivo = `Caderno da Aula - ${c.titulo.replace(/[\\/:*?"<>|]+/g, " ").trim().slice(0, 70)} - ${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${esc(arquivo)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital@1&display=swap" rel="stylesheet">
+<style>
+@page{size:A4;margin:16mm 18mm 20mm;background:#F6F2EC;
+  @bottom-left{content:"Caderno da Aula · ${marca.aba}";font:500 8.5pt Poppins,Arial,sans-serif;color:#8D8377;letter-spacing:.4px}
+  @bottom-right{content:counter(page);font:700 11.5pt Poppins,Arial,sans-serif;color:#fff;background:#B04A1C;border-radius:50%;width:9.5mm;height:9.5mm;text-align:center;vertical-align:middle;margin:3mm 0 5mm auto}}
+@page :first{margin:0;@bottom-left{content:none}@bottom-right{content:none;background:none}}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html{background:#F6F2EC}
+body{margin:0;font:11.5pt/1.55 Poppins,Arial,sans-serif;color:#2A211C;background:#F6F2EC}
+.capa{background:#1B1512;color:#FBEEE5;padding:22mm 18mm;height:297mm;display:flex;flex-direction:column;border-top:3mm solid #C9A24D;border-bottom:3mm solid #C9A24D;break-after:page;position:relative;overflow:hidden}
+.capa .hex{position:absolute;right:-28mm;top:22mm;width:150mm;height:150mm;opacity:.5}
+.capa img{height:26mm;align-self:flex-start;position:relative}
+.capa .o{font-size:10pt;letter-spacing:3px;font-weight:700;color:#E5662C;text-transform:uppercase;margin-top:44mm;position:relative}
+.capa h1{font-size:30pt;line-height:1.12;margin:5mm 0 8mm;font-weight:700;position:relative;max-width:150mm}
+.capa .r{width:26mm;height:1.2mm;background:#E5662C;margin-bottom:8mm}
+.capa dl{display:grid;grid-template-columns:38mm 1fr;gap:2.5mm 4mm;margin:0;font-size:11.5pt;position:relative}
+.capa dt{color:#C9A24D;font-weight:600}.capa dd{margin:0;color:#E8DED4}
+.capa .p{margin-top:auto;font-size:9.5pt;color:#BFB3A3;letter-spacing:1px;text-transform:uppercase}
+.eye{font-size:9.5pt;letter-spacing:2.6px;font-weight:700;color:#E5662C;text-transform:uppercase;display:flex;gap:4mm;align-items:center;margin:0 0 3mm}
+.eye::after{content:"";flex:1;height:.3mm;background:#E2D9CD}
+h2{font-size:21pt;line-height:1.15;margin:0 0 6mm}h2 em{font-style:normal;color:#E5662C}
+section{break-before:page}section.primeira{break-before:auto}
+.ns{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin-bottom:6mm}
+.n{background:#fff;border:.3mm solid #E2D9CD;border-radius:2mm;padding:3.5mm;display:flex;gap:3mm;align-items:center}
+.dk{width:8mm;height:8mm;border-radius:50%;flex:none}
+.n b{display:block;font-size:19pt;line-height:1;color:#2A211C}.n span{font-size:8.5pt;letter-spacing:1.2px;text-transform:uppercase;color:#8D8377;font-weight:600}
+.regua{background:#fff;border:.3mm solid #E2D9CD;border-radius:2mm;padding:4mm 5mm 2mm;break-inside:avoid}
+.leg{display:flex;flex-wrap:wrap;gap:2mm 5mm;font-size:9.5pt;color:#4A3F37;margin:2mm 0}
+.leg i{display:inline-block;width:3.2mm;height:3.2mm;border-radius:50%;margin-right:1.5mm;vertical-align:-.3mm}
+.d{background:#fff;border:.3mm solid #E2D9CD;border-left:1.2mm solid #E5662C;border-radius:2mm;padding:4mm 5mm;margin-bottom:4mm;break-inside:avoid}
+.d.m{border-left-color:#B5781E}.d.m .e{color:#B5781E}
+.dh{display:flex;justify-content:space-between;gap:4mm;align-items:center}
+.e{font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;color:#B04A1C}
+.t{font-size:9.5pt;color:#8D8377;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tx{margin:1.5mm 0 0;white-space:pre-wrap;font-weight:500}
+.c{margin-top:3mm;padding-top:2.5mm;border-top:.3mm solid #EEE7DD;color:#4A3F37;font-size:10.5pt}
+.c span{display:block;font-size:8.5pt;letter-spacing:1.6px;font-weight:700;text-transform:uppercase;color:#8D8377;margin-bottom:1mm}
+.c p{margin:0 0 1mm}.c b{color:#2F6B6F}
+.l{display:grid;grid-template-columns:14mm 1fr;gap:3mm;padding:2mm 3mm;border-left:1mm solid transparent;break-inside:avoid}
+.l p{margin:0;white-space:pre-wrap}.l b{color:#2F6B6F;font-size:10.5pt}
+.l.dest{background:#FFF3D6;border-left-color:#B5781E}
+.l.nota{background:#fff;border:.3mm solid #E2D9CD;border-left:1mm solid #E5662C;border-radius:1.5mm;margin:1.5mm 0}
+.l.marco{background:#1B1512;border-left-color:#C9A24D;border-radius:1.5mm;margin:1.5mm 0}
+.l.marco p{color:#FBEEE5;font-weight:600}.l.marco .t{color:#BFB3A3}.l.marco .e{color:#C9A24D}
+.nada{color:#8D8377}
+.fim{margin-top:10mm;padding-top:4mm;border-top:.6mm solid #E5662C;font:italic 12pt Lora,Georgia,serif;color:#4A3F37}
+.bar{position:fixed;top:0;left:0;right:0;background:#1B1512;color:#FBEEE5;padding:10px 18px;display:flex;gap:14px;align-items:center;justify-content:space-between;font-size:14px;z-index:9}
+.bar button{font:600 14px Poppins,Arial,sans-serif;border:0;border-radius:24px;padding:9px 20px;background:#E5662C;color:#fff;cursor:pointer}
+@media screen{html{background:#8D8377}body{padding:70px 0 40px;background:#8D8377}.folha{max-width:210mm;margin:0 auto;padding:0 18mm 16mm;background:#F6F2EC;box-shadow:0 2px 22px rgba(0,0,0,.18)}.capa{margin:0 -18mm 12mm}section{margin-top:14mm}}
+@media print{.bar{display:none}}
+</style></head><body>
+<div class="bar"><span>Caderno da Aula · na janela de impressão, escolha <b>Salvar como PDF</b></span><button onclick="print()">Salvar em PDF</button></div>
+<div class="folha">
+<div class="capa"><svg class="hex" viewBox="0 0 300 300" fill="none" stroke="#C9A24D" stroke-width="1"><path d="M150 20l112 65v130l-112 65L38 215V85z" opacity=".5"/><path d="M150 60l78 45v90l-78 45-78-45v-90z" opacity=".35"/><path d="M150 100l43 25v50l-43 25-43-25v-50z" opacity=".25"/></svg>
+ <img src="${logo}" alt="${esc(marca.alt)}">
+ <div class="o">Caderno da Aula</div><h1>${esc(c.titulo)}</h1><div class="r"></div>
+ <dl><dt>Aluno</dt><dd>${esc(c.nome || "")}</dd><dt>Data</dt><dd>${esc(data)}</dd><dt>Registro</dt><dd>${hora(ini)} às ${hora(fimT)}</dd>
+ <dt>Conteúdo</dt><dd>${marcos.length} momentos marcados · ${notas.length} anotações · ${c.falas.length} falas</dd></dl>
+ <div class="p">${esc(marca.olho)}</div></div>
+<section class="primeira"><div class="eye">01 · Síntese</div><h2>O que foi registrado <em>nesta aula</em></h2>
+ <div class="ns">${n(marcos.length, "Momentos", "#B5781E")}${n(notas.length, "Anotações", "#E5662C")}${n(c.falas.length, "Falas", "#4E6E8E")}${n(Math.max(1, Math.round(dur / 60000)), "Minutos", "#5E7D52")}</div>
+ <div class="regua"><div class="e" style="color:#8D8377">Linha do tempo da aula</div>${regua}
+ <div class="leg"><span><i style="background:#B5781E"></i>Momento marcado</span><span><i style="background:#E5662C"></i>Anotação</span><span><i style="background:#B5781E;border-radius:0;width:1mm"></i>Fala destacada</span><span><i style="background:#CFC5B8;border-radius:0;width:1mm"></i>Fala</span></div></div></section>
+<section><div class="eye">02 · Momentos e anotações</div><h2>Os pontos destacados <em>durante a aula</em></h2>
+${c.itens.length ? c.itens.map(cartao).join("") : '<p class="nada">Nenhum momento marcado e nenhuma anotação nesta aula.</p>'}</section>
+<section><div class="eye">03 · Transcrição da aula</div><h2>As falas da aula, <em>na ordem em que aconteceram</em></h2>
+${linhas.length ? fluxo.map(linha).join("") : '<p class="nada">Nenhuma fala foi registrada. O caderno registra as falas quando as legendas estão ativas no Zoom.</p>'}
+<div class="fim">Caderno pessoal gerado na sala de aula ao vivo do ${esc(marca.alt)}.</div></section>
+</div></body></html>`;
+}
+
+// ================================================================ fila de mãos levantadas
+const fila = new Map();
+let ordem = 0, primeiraLeitura = true, minhaMao = false;
+function limparFila() { fila.clear(); primeiraLeitura = true; desenharFila(); }
+function receberParticipantes(lista) {
+  const agora = Date.now();
+  for (const p of lista) if (p.uid != null && p.nome) nomesPorId.set(p.uid, p.nome);
+  const comMao = lista.filter(p => p.mao);
+  for (const p of comMao) if (!fila.has(p.id)) fila.set(p.id, { nome: p.nome, desde: agora, ordem: ++ordem, anterior: primeiraLeitura, eu: p.eu });
+  for (const id of [...fila.keys()]) if (!comMao.some(p => p.id === id)) fila.delete(id);
+  for (const p of comMao) { const f = fila.get(p.id); f.nome = p.nome; f.eu = p.eu; }
+  primeiraLeitura = false;
+  const eu = lista.find(p => p.eu);
+  if (eu) { if (eu.mao && !minhaMao) PR.maos++; minhaMao = eu.mao; }
+  desenharFila();
+}
+function ha(t) { const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? "agora" : `há ${m} min`; }
+function desenharFila() {
+  const itens = [...fila.values()].sort((a, b) => (a.anterior === b.anterior ? a.ordem - b.ordem : a.anterior ? -1 : 1));
+  $("f-lista").innerHTML = itens.map(f => `<li class="${f.eu ? "eu" : ""}"><span class="nm">${esc(f.nome)}${f.eu ? "<em>você</em>" : ""}${f.anterior ? '<span class="ant">levantada antes da sua entrada</span>' : ""}</span><span class="hd">${f.anterior ? "" : ha(f.desde)}</span></li>`).join("");
+  $("f-vazio").hidden = itens.length > 0;
+  $("f-total").textContent = itens.length ? `${itens.length} ${itens.length === 1 ? "pessoa" : "pessoas"}` : "";
+  $("ct-fila").hidden = !itens.length; $("ct-fila").textContent = itens.length;
+  $("f-mao").textContent = minhaMao ? "Baixar a mão" : "Levantar a mão";
+}
+setInterval(desenharFila, 30000);
+$("f-mao").addEventListener("click", () => { if (quadro && dentro) quadro.contentWindow.postMessage({ sala: "aula", tipo: "mao", levantar: !minhaMao }, location.origin); });
+
+// ================================================================ presença na Pionira
+// Ativa só quando config.js informa o endereço (presenca). A página envia entrada, saída e tempo conectado, e as
+// quantidades de marcações, anotações e mãos levantadas. O conteúdo do caderno nunca é enviado.
+const PR = { endpoint: https(C.presenca || ""), token: limpar(h.get("aluno"), 400), sessao: uid(), desde: 0, acumulado: 0, salas: 0, maos: 0, marcos: 0, notas: 0, pulso: null };
+if (PR.endpoint && !P.prof) $("aviso-presenca").hidden = false;
+function presenca(evento) {
+  if (!PR.endpoint || P.prof || !dadosEntrada) return;
+  const agora = Date.now();
+  if (evento === "entrada") { PR.desde = agora; clearInterval(PR.pulso); PR.pulso = setInterval(() => presenca("pulso"), 5 * 60000); }
+  const conectado = PR.acumulado + (PR.desde ? agora - PR.desde : 0);
+  if (evento === "saida") { PR.acumulado = conectado; PR.desde = 0; clearInterval(PR.pulso); }
+  const corpo = JSON.stringify({
+    versao: 1, evento, momento: new Date(agora).toISOString(), sessao: PR.sessao,
+    reuniao: dadosEntrada.mn, titulo: P.titulo,
+    aluno: { nome: dadosEntrada.nome, email: dadosEntrada.email, token: PR.token },
+    minutosConectado: Math.round(conectado / 60000), salasSimultaneas: PR.salas, maosLevantadas: PR.maos,
+    momentosMarcados: PR.marcos, anotacoes: PR.notas
+  });
+  try {
+    if (evento === "saida" && navigator.sendBeacon) navigator.sendBeacon(PR.endpoint, new Blob([corpo], { type: "text/plain;charset=UTF-8" }));
+    else fetch(PR.endpoint, { method: "POST", mode: "cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: corpo }).catch(() => {});
+  } catch (e) {}
+}
+// Gancho de verificação (?teste=1): permite simular a aula sem uma reunião aberta.
+if (q.get("teste")) window.__aula = { abrirSala, entrou, saiu, legendaSdk, receberParticipantes, mudarSala, marcar, anotar, caderno: () => S, pdf: () => documentoHtml(S), definir: d => { dadosEntrada = d; } };
+window.addEventListener("pagehide", () => { if (dentro) { if (S) gravarJa(); presenca("saida"); } });
 }
 </script>
 </body>

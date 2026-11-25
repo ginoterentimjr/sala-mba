@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Zoom · Sala de aula ao vivo</title>
+<style>
+html,body{margin:0;height:100%;background:#1B1512;color:#FBEEE5;font:15px/1.5 Poppins,"Segoe UI",Arial,sans-serif}
+#espera{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+#espera b{display:block;font-size:18px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div id="espera"><div><b id="e-t">Preparando o Zoom</b><span id="e-s">A aula abre neste quadro.</span></div></div>
+<script>
+// Quadro do Zoom da sala de aula (Meeting SDK, client view). Recebe da página principal os dados de entrada e os fundos
+// de tela, entra na reunião e devolve à página principal: legendas, mãos levantadas, sala simultânea e espera pelo professor.
+{
+const PAI = window.parent;
+const ORIGEM = location.origin;
+const enviar = (tipo, dados = {}) => { try { PAI.postMessage({ sala: "aula", tipo, ...dados }, ORIGEM); } catch (e) {} };
+const copia = o => { try { return JSON.parse(JSON.stringify(o)); } catch (e) { return String(o); } };
+const q = new URLSearchParams(location.search);
+const $ = id => document.getElementById(id);
+
+if (q.get("fim")) {
+  $("e-t").textContent = "Você saiu da aula";
+  $("e-s").textContent = "O seu caderno está no painel ao lado.";
+  enviar("saiu");
+} else {
+  enviar("pronto");
+}
+
+function carregar(src) {
+  return new Promise((ok, falha) => {
+    const s = document.createElement("script");
+    s.src = src; s.onload = ok; s.onerror = () => falha(new Error("Falha ao carregar " + src));
+    document.head.appendChild(s);
+  });
+}
+async function carregarZoom(v) {
+  if (window.ZoomMtg) return;
+  const base = `https://source.zoom.us/${v}/lib/vendor/`;
+  for (const f of ["react.min.js", "react-dom.min.js", "redux.min.js", "redux-thunk.min.js", "lodash.min.js"]) await carregar(base + f);
+  await carregar(`https://source.zoom.us/zoom-meeting-${v}.min.js`);
+}
+
+let Z = null, iniciado = false, dentro = false;
+window.addEventListener("message", ev => {
+  if (ev.origin !== ORIGEM || ev.source !== PAI) return;
+  const m = ev.data || {};
+  if (m.sala !== "aula") return;
+  if (m.tipo === "entrar" && !iniciado) { iniciado = true; entrar(m.dados).catch(e => enviar("erro", { mensagem: e.message || String(e) })); }
+  if (m.tipo === "mao" && Z && dentro) {
+    const fn = m.levantar ? Z.raiseHand : Z.lowerHand;
+    try { fn({ success: () => {}, error: e => enviar("aviso", { mensagem: "O Zoom não aceitou o pedido agora. Use o botão Levantar a mão do Zoom.", detalhe: copia(e) }) }); } catch (e) {}
+  }
+});
+
+// ---------------------------------------------------------------- fundos de tela
+// A pré-visualização só mostra a lista entregue depois de montada, e repetir a entrega depois que a pessoa escolheu
+// um fundo descarta a escolha. Por isso: uma entrega na abertura, uma quando a pré-visualização aparece e, na entrada,
+// só se o Zoom ainda não tiver a lista.
+let vbList = [];
+function montarFundos(d) {
+  const lista = [];
+  if (d.imagemPropria) {
+    try { lista.push({ id: "minha", displayName: "Minha imagem", fileName: "minha-imagem.jpg", url: URL.createObjectURL(d.imagemPropria) }); } catch (e) {}
+  }
+  lista.push({ id: "blur", displayName: "blur", fileName: "blur.png", url: `https://source.zoom.us/${d.versao}/lib/image/blur.png` });
+  for (const f of (d.fundos || [])) lista.push(f);
+  vbList = lista;
+}
+function entregarFundos(tentativa = 0) {
+  if (vbList.length < 2) return;
+  try { Z.updateVirtualBackgroundList({ vbList, success: () => {}, error: () => { if (tentativa < 3) setTimeout(() => entregarFundos(tentativa + 1), 1500); } }); } catch (e) {}
+}
+function entregarNaPrevia() {
+  let voltas = 0;
+  const olhar = setInterval(() => {
+    const raiz = $("zmmtg-root");
+    const previa = raiz && (raiz.querySelector('[class*="preview"]') || [...raiz.querySelectorAll("button")].find(b => /plano|fundo|background/i.test(b.textContent)));
+    if (previa) { clearInterval(olhar); entregarFundos(); }
+    else if (++voltas > 150) clearInterval(olhar);
+  }, 200);
+  return () => clearInterval(olhar);
+}
+function entregarSeFaltar() {
+  try {
+    Z.getVirtualBackgroundStatus({
+      success: r => { const ids = ((r && r.result && r.result.vbList) || []).map(v => v.id); const marcador = vbList.find(v => v.id !== "blur"); if (marcador && !ids.includes(marcador.id)) entregarFundos(); },
+      error: () => entregarFundos()
+    });
+  } catch (e) {}
+}
+
+// ---------------------------------------------------------------- espera pelo professor
+// Quando a reunião ainda não começou, o próprio Zoom espera o anfitrião e entra sozinho quando ele abre a sala.
+// O quadro avisa a página principal, que cobre a espera com a imagem da aula.
+let aguardando = false, olharEspera = null;
+// Textos do próprio Zoom (pt-PT e inglês): espera pelo início da reunião e sala de espera.
+const FRASES_ESPERA = /Aguardando o in[ií]cio da reuni[aã]o pelo anfitri|Aguarde; o anfitri[aã]o da reuni[aã]o deixar|wait\w* for the host to start|host will let you in/i;
+function vigiarEspera() {
+  olharEspera = setInterval(() => {
+    const raiz = $("zmmtg-root");
+    let texto = "";
+    if (raiz) {
+      if (!dentro) texto = (raiz.innerText || "").slice(0, 5000);
+      else { const sala = raiz.querySelector('[class*="waiting-room-container"],[class*="waiting-room-preview"],[class*="wc-waiting"]'); texto = sala ? (sala.innerText || "") : ""; }
+    }
+    const agora = FRASES_ESPERA.test(texto);
+    if (agora !== aguardando) { aguardando = agora; enviar("aguardando", { valor: agora }); }
+  }, 1500);
+}
+
+// ---------------------------------------------------------------- entrada
+async function entrar(d) {
+  await carregarZoom(d.versao);
+  Z = window.ZoomMtg;
+  Z.setZoomJSLib(`https://source.zoom.us/${d.versao}/lib`, "/av");
+  Z.preLoadWasm();
+  Z.prepareWebSDK();
+  try { await Promise.resolve(Z.i18n.load(d.idioma)); await Promise.resolve(Z.i18n.reload(d.idioma)); } catch (e) {}
+  $("espera").style.display = "none";
+  montarFundos(d);
+  const saida = new URL(location.href); saida.search = "?fim=1";
+  const opcoes = {
+    leaveUrl: saida.toString(),
+    patchJsMedia: true,
+    leaveOnPageUnload: true,
+    disableInvite: true,
+    disablePreview: !!d.semPrevia,
+    success: () => {
+      ouvir();
+      entregarFundos();
+      const pararPrevia = d.semPrevia ? () => {} : entregarNaPrevia();
+      vigiarEspera();
+      Z.join({
+        signature: d.signature, sdkKey: d.sdkKey, meetingNumber: d.mn, passWord: d.pwd || "",
+        userName: d.nome, userEmail: d.email || "",
+        success: () => {
+          dentro = true; pararPrevia();
+          if (aguardando) { aguardando = false; enviar("aguardando", { valor: false }); }
+          entregarSeFaltar();
+          let eu = null;
+          try { Z.getCurrentUser({ success: r => { eu = r && r.result && r.result.currentUser; enviar("entrou", { eu: eu ? { id: eu.userId, nome: eu.userName } : null }); }, error: () => enviar("entrou", {}) }); }
+          catch (e) { enviar("entrou", {}); }
+          acompanhar();
+          observarLegendas();
+        },
+        error: e => enviar("erro", { mensagem: "O Zoom recusou a entrada.", codigo: e && (e.errorCode ?? e.code), detalhe: e && (e.errorMessage || e.reason || e.message) })
+      });
+    },
+    error: e => enviar("erro", { mensagem: "O Zoom não iniciou.", codigo: e && (e.errorCode ?? e.code), detalhe: e && (e.errorMessage || e.message) })
+  };
+  if (d.semAV) opcoes.isSupportAV = false;
+  Z.init(opcoes);
+}
+
+// ---------------------------------------------------------------- eventos do SDK
+function ouvir() {
+  const seguro = (nome, fn) => { try { Z.inMeetingServiceListener(nome, fn); } catch (e) {} };
+  for (const nome of ["onReceiveTranscriptionMsg", "onReceiveTranslateMsg"]) seguro(nome, dados => enviar("legenda", { fonte: "sdk", bruto: copia(dados) }));
+  seguro("onActiveSpeaker", dados => enviar("falante", { bruto: copia(dados) }));
+  seguro("onRoomStatusChange", dados => enviar("salas-estado", { bruto: copia(dados) }));
+  seguro("onMeetingStatus", dados => enviar("estado", { bruto: copia(dados) }));
+}
+
+// Participantes (mãos levantadas) e situação em sala simultânea, conferidos a cada segundo e meio.
+let ultimaLista = "", ultimaSituacao = "";
+function acompanhar() {
+  setInterval(() => {
+    try {
+      Z.getAttendeeslist({
+        success: r => {
+          const l = r && r.result && Array.isArray(r.result.attendeesList) ? r.result.attendeesList : [];
+          const lista = l.map(a => ({ id: a.participantUUID || a.persistentID || String(a.userId), uid: a.userId, nome: a.userName || "", mao: !!a.raiseHand, eu: !!a.self, prof: !!(a.isHost || a.isCoHost) }));
+          const s = JSON.stringify(lista);
+          if (s !== ultimaLista) { ultimaLista = s; enviar("participantes", { lista }); }
+        },
+        error: () => {}
+      });
+    } catch (e) {}
+    try {
+      Z.getUserStatus({
+        success: r => {
+          const st = (r && r.result && r.result.status) || "";
+          if (st === ultimaSituacao) return;
+          ultimaSituacao = st;
+          const emSala = st === "in room" || st === "joining";
+          if (emSala) {
+            try { Z.getCurrentBreakoutRoom({ success: x => enviar("sala-simultanea", { emSala: true, nome: (x && x.result && x.result.name) || "", situacao: st }), error: () => enviar("sala-simultanea", { emSala: true, situacao: st }) }); }
+            catch (e) { enviar("sala-simultanea", { emSala: true, situacao: st }); }
+          } else enviar("sala-simultanea", { emSala: false, situacao: st });
+        },
+        error: () => {}
+      });
+    } catch (e) {}
+  }, 1500);
+}
+
+// ---------------------------------------------------------------- legendas lidas da tela (reserva)
+const SELETORES_LINHA = [
+  '[class*="lt-full-transcript__item"]',
+  '[class*="live-transcription-subtitle__item"]',
+  '[class*="subtitle__item"]'
+];
+let ultimoRetrato = "";
+function observarLegendas() {
+  setInterval(() => {
+    const linhas = [];
+    for (const sel of SELETORES_LINHA) {
+      document.querySelectorAll(sel).forEach(el => {
+        const texto = (el.innerText || "").replace(/\s+\n/g, "\n").trim();
+        if (!texto) return;
+        const nomeEl = el.querySelector('[class*="display-name"],[class*="name"]');
+        const msgEl = el.querySelector('[class*="message"],[class*="text"],[class*="content"]');
+        const img = el.querySelector("img[alt]");
+        linhas.push({ nome: (nomeEl && nomeEl.innerText.trim()) || (img && img.alt) || "", texto: (msgEl && msgEl.innerText.trim()) || texto });
+      });
+      if (linhas.length) break;
+    }
+    const retrato = JSON.stringify(linhas);
+    if (linhas.length && retrato !== ultimoRetrato) { ultimoRetrato = retrato; enviar("legenda", { fonte: "tela", linhas }); }
+  }, 700);
+}
+}
+</script>
+</body>
+</html>
