@@ -55,6 +55,15 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
 .fundo-linha img{height:54px;width:96px;object-fit:cover;border-radius:6px;border:1px solid var(--filete)}
 .fundo-linha a{color:var(--terra);font-size:13px}
 .fundo-nota{font-size:13px;color:var(--corpo);margin:6px 0 0}
+.espera{position:fixed;inset:0;z-index:50;background:var(--escuro);color:var(--creme);font-family:Poppins,"Segoe UI",Arial,sans-serif}
+.espera img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.espera .faixa{position:absolute;left:0;right:0;bottom:0;padding:48px max(5vw,18px) 30px;background:linear-gradient(to top,rgba(27,21,18,.94),rgba(27,21,18,.72) 62%,rgba(27,21,18,0));display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.espera h2{margin:0 0 4px;font-size:clamp(22px,3vw,32px);line-height:1.15;font-weight:700}
+.espera p{margin:0;font-size:15px;color:#D9CBBE}
+.espera .pulso{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--laranja);margin-right:10px;animation:pulso 1.6s ease-in-out infinite}
+@keyframes pulso{50%{opacity:.25}}
+.espera button{font:600 14px Poppins,Arial,sans-serif;border:1.5px solid #D9CBBE;background:transparent;color:var(--creme);border-radius:24px;padding:10px 22px;cursor:pointer}
+.espera button:hover{background:rgba(255,255,255,.1)}
 .saiu{background:#E4EDE0;border:1px solid #C9D9C1;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:15px;color:var(--tinta)}
 .antessala footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5vw,18px);border-bottom:6px solid var(--ouro);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media(max-width:820px){.antessala main{grid-template-columns:minmax(0,1fr)}.marca img{height:48px}}
@@ -115,6 +124,13 @@ html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);fo
  <footer><span id="rodape">MBA Gestão Estratégica de Valor · Sala de aula ao vivo</span><span>A reunião acontece no Zoom, dentro desta página.</span></footer>
 </div>
 
+<div class="espera" id="espera" hidden role="status" aria-live="polite">
+ <img id="espera-img" alt="">
+ <div class="faixa">
+  <div><h2 id="espera-titulo">A aula começa em instantes</h2><p><span class="pulso"></span>A entrada é automática assim que o professor abrir a sala. Mantenha esta página aberta.</p></div>
+  <button type="button" id="espera-sair">Voltar</button>
+ </div>
+</div>
 <script src="config.js"></script>
 <script src="fundos/lista.js"></script>
 <script>
@@ -141,6 +157,8 @@ const P = {
   quando: q.get("quando") || C.quando || "",
   nome: limpar(h.get("nome") || q.get("nome"), 60),
   email: limpar(h.get("email") || q.get("email"), 80),
+  // Imagem da tela de espera: ?espera=<endereço https da imagem> tem prioridade sobre a de config.js e sobre a padrão.
+  espera: (() => { for (const v of [q.get("espera"), C.espera, "fundos/elegante-06.jpg"]) { try { const u = new URL(v, location.href); if (u.protocol === "https:") return u.href; } catch (e) {} } return ""; })(),
   versao: C.versaoSdk || "6.10.0",
   idioma: C.idioma || "pt-PT"
 };
@@ -244,8 +262,26 @@ function voltarAntessala() {
   $("entrar").disabled = false;
 }
 
-$("form").addEventListener("submit", async ev => {
-  ev.preventDefault();
+// Tela de espera: enquanto a reunião não começa, a página mostra a imagem e tenta a entrada de novo a cada 20 segundos.
+const NAO_COMECOU = [3008, 3001];
+let esperaRelogio = null;
+function aguardar() {
+  voltarAntessala(); status("");
+  $("espera-img").src = P.espera; $("espera-titulo").textContent = P.titulo && P.titulo !== "Aula ao vivo" ? P.titulo + ": começa em instantes" : "A aula começa em instantes";
+  $("espera").hidden = false; $("antessala").style.display = "none";
+  clearTimeout(esperaRelogio);
+  esperaRelogio = setTimeout(() => entrar(true), 20000);
+}
+function sairDaEspera() { clearTimeout(esperaRelogio); esperaRelogio = null; $("espera").hidden = true; }
+$("espera-sair").addEventListener("click", () => { sairDaEspera(); voltarAntessala(); status("A aula ainda não começou. Entre de novo quando quiser.", ""); });
+function falhou(e) {
+  const cod = e && (e.errorCode ?? e.code);
+  if (NAO_COMECOU.includes(cod)) { aguardar(); return; }
+  sairDaEspera(); voltarAntessala(); status(msgErro(e), "erro");
+}
+
+$("form").addEventListener("submit", ev => { ev.preventDefault(); entrar(false); });
+async function entrar(emEspera) {
   const nome = $("nome").value.trim(), email = $("email").value.trim();
   const mn = P.mn || $("reuniao").value.replace(/\D/g, "");
   const pwd = P.mn ? P.pwd : $("senha").value.trim();
@@ -266,7 +302,7 @@ $("form").addEventListener("submit", async ev => {
     Z.prepareWebSDK();
     try { await Promise.resolve(Z.i18n.load(P.idioma)); await Promise.resolve(Z.i18n.reload(P.idioma)); } catch (e) {}
     $("antessala").style.display = "none";
-    const raiz = $("zmmtg-root"); if (raiz) raiz.style.display = "block";
+    const raiz = $("zmmtg-root"); if (raiz) raiz.style.display = emEspera ? "none" : "block";
     Z.init({
       leaveUrl: enderecoDeSaida(),
       patchJsMedia: true,
@@ -279,16 +315,17 @@ $("form").addEventListener("submit", async ev => {
         passWord: pwd,
         userName: nome,
         userEmail: email,
-        success: () => entregarFundos(Z, P.versao),
-        error: e => { voltarAntessala(); status(msgErro(e), "erro"); }
+        success: () => { sairDaEspera(); const r2 = $("zmmtg-root"); if (r2) r2.style.display = "block"; entregarFundos(Z, P.versao); },
+        error: falhou
       }); },
-      error: e => { voltarAntessala(); status(msgErro(e), "erro"); }
+      error: falhou
     });
   } catch (e) {
+    if (emEspera) { aguardar(); return; }
     voltarAntessala();
     status((e && e.message) ? e.message : "Não foi possível entrar na aula.", "erro");
   }
-});
+}
 }
 </script>
 </body>
