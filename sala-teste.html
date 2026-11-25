@@ -269,7 +269,7 @@ $("form").addEventListener("submit", async ev => {
       patchJsMedia: true,
       leaveOnPageUnload: true,
       disableInvite: true,
-      success: () => Z.join({
+      success: () => { entregarFundos(Z, P.versao); setTimeout(() => entregarFundos(Z, P.versao), 1500); Z.join({
         signature: dados.signature,
         sdkKey: dados.sdkKey || C.clientId,
         meetingNumber: mn,
@@ -278,7 +278,7 @@ $("form").addEventListener("submit", async ev => {
         userEmail: email,
         success: () => entregarFundos(Z, P.versao),
         error: e => { voltarAntessala(); status(msgErro(e), "erro"); }
-      }),
+      }); },
       error: e => { voltarAntessala(); status(msgErro(e), "erro"); }
     });
   } catch (e) {
