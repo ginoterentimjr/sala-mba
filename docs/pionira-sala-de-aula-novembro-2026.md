@@ -1,10 +1,10 @@
 # Sala de aula ao vivo: correções, novidades e ajustes na Pionira
 
-**Para:** Victor Miguez
-**Data:** 25 de novembro de 2026
-**Página dos alunos:** https://ginoterentimjr.github.io/sala-mba/
-**Versão em validação:** https://ginoterentimjr.github.io/sala-mba/sala-teste.html
-**Repositório:** `ginoterentimjr/sala-mba` (arquivos `index.html`, `sala-teste.html`, `aula/zoom.html`, `config.js`, pasta `fundos/`)
+- **Para:** Victor Miguez
+- **Data:** 25 de novembro de 2026
+- **Página dos alunos:** https://ginoterentimjr.github.io/sala-mba/
+- **Versão em validação:** https://ginoterentimjr.github.io/sala-mba/sala-teste.html
+- **Repositório:** `ginoterentimjr/sala-mba` (arquivos `index.html`, `sala-teste.html`, `aula/zoom.html`, `config.js`, pasta `fundos/`)
 
 ## 1. Resumo
 
