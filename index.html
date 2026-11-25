@@ -10,31 +10,31 @@
 <style>
 /* Sala de aula ao vivo do MBA: antessala no padrão da casa; o Zoom (Meeting SDK, client view) ocupa a página ao entrar. */
 :root{--escuro:#1B1512;--claro:#F6F2EC;--creme:#FAF5EC;--tinta:#2A211C;--corpo:#4A3F37;--meta:#8D8377;--laranja:#E5662C;--terra:#B04A1C;--ouro:#C9A24D;--filete:#E2D9CD;--verde:#5E7D52}
-*{box-sizing:border-box;min-width:0}
+.antessala,.antessala *{box-sizing:border-box;min-width:0}
 html,body{margin:0;min-height:100%;background:var(--claro);color:var(--tinta);font:16px/1.55 Poppins,"Segoe UI",Arial,sans-serif}
 #zmmtg-root{display:none}
 [hidden]{display:none!important}
 .antessala{min-height:100vh;display:flex;flex-direction:column}
-header{background:var(--escuro);color:var(--creme);border-top:6px solid var(--ouro);padding:22px max(5vw,18px) 26px}
+.antessala header{background:var(--escuro);color:var(--creme);border-top:6px solid var(--ouro);padding:22px max(5vw,18px) 26px}
 .marca{display:flex;align-items:center;gap:18px}
 .marca img{height:62px;width:auto}
 .olho{font-size:12px;letter-spacing:3px;font-weight:700;color:var(--ouro);text-transform:uppercase}
 .sub{font-size:12px;letter-spacing:2px;color:#BFB3A3;text-transform:uppercase;margin-top:3px}
-h1{font-size:clamp(26px,4vw,40px);line-height:1.12;margin:20px 0 6px;font-weight:700;text-wrap:balance}
-h1 em{font-style:normal;color:var(--laranja)}
+.antessala h1{font-size:clamp(26px,4vw,40px);line-height:1.12;margin:20px 0 6px;font-weight:700;text-wrap:balance}
+.antessala h1 em{font-style:normal;color:var(--laranja)}
 .quando{color:#D9CBBE;margin:0}
-main{flex:1;padding:28px max(5vw,18px) 40px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;max-width:1240px;width:100%;margin:0 auto}
+.antessala main{flex:1;padding:28px max(5vw,18px) 40px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;max-width:1240px;width:100%;margin:0 auto}
 .cartao{background:#fff;border:1px solid var(--filete);border-radius:10px;padding:26px 28px}
 .cartao h2{font-size:21px;margin:0 0 4px}
 .cartao p.nota{color:var(--corpo);font-size:14px;margin:0 0 18px}
-label{display:block;font-size:13px;font-weight:600;color:var(--tinta);margin:14px 0 6px}
-label span{font-weight:400;color:var(--meta)}
-input{width:100%;font:16px Poppins,Arial,sans-serif;padding:12px 14px;border:1.5px solid var(--filete);border-radius:8px;background:var(--creme);color:var(--tinta)}
-input:focus{outline:none;border-color:var(--laranja);background:#fff}
-button{font:600 16px Poppins,Arial,sans-serif;border:0;border-radius:28px;padding:14px 28px;cursor:pointer;background:var(--laranja);color:#fff;margin-top:22px;min-height:48px;width:100%}
-button:hover{background:var(--terra)}
-button:disabled{opacity:.55;cursor:wait}
-button:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
+.antessala label{display:block;font-size:13px;font-weight:600;color:var(--tinta);margin:14px 0 6px}
+.antessala label span{font-weight:400;color:var(--meta)}
+.antessala input{width:100%;font:16px Poppins,Arial,sans-serif;padding:12px 14px;border:1.5px solid var(--filete);border-radius:8px;background:var(--creme);color:var(--tinta)}
+.antessala input:focus{outline:none;border-color:var(--laranja);background:#fff}
+.antessala button{font:600 16px Poppins,Arial,sans-serif;border:0;border-radius:28px;padding:14px 28px;cursor:pointer;background:var(--laranja);color:#fff;margin-top:22px;min-height:48px;width:100%}
+.antessala button:hover{background:var(--terra)}
+.antessala button:disabled{opacity:.55;cursor:wait}
+.antessala button:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
 .status{margin-top:14px;font-size:14px;min-height:22px}
 .status.erro{color:var(--terra);font-weight:600}
 .status.ok{color:var(--verde);font-weight:600}
@@ -49,9 +49,15 @@ button:focus-visible{outline:3px solid var(--ouro);outline-offset:2px}
 .ola{background:#FBEEE5;border:1px solid #F1D3BF;border-radius:10px;padding:14px 18px;font-size:15px;color:var(--tinta)}
 .ola b{font-weight:700}
 .ola a{color:var(--terra);font-size:13px;white-space:nowrap}
+.fundo-linha{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.antessala .fundo-linha button{width:auto;margin-top:0;min-height:42px;padding:10px 20px;background:#fff;color:var(--terra);border:1.5px solid var(--terra)}
+.antessala .fundo-linha button:hover{background:#FBEEE5}
+.fundo-linha img{height:54px;width:96px;object-fit:cover;border-radius:6px;border:1px solid var(--filete)}
+.fundo-linha a{color:var(--terra);font-size:13px}
+.fundo-nota{font-size:13px;color:var(--corpo);margin:6px 0 0}
 .saiu{background:#E4EDE0;border:1px solid #C9D9C1;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:15px;color:var(--tinta)}
-footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5vw,18px);border-bottom:6px solid var(--ouro);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media(max-width:820px){main{grid-template-columns:minmax(0,1fr)}.marca img{height:48px}}
+.antessala footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5vw,18px);border-bottom:6px solid var(--ouro);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:820px){.antessala main{grid-template-columns:minmax(0,1fr)}.marca img{height:48px}}
 </style>
 </head>
 <body>
@@ -81,6 +87,14 @@ footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5v
     <input id="reuniao" inputmode="numeric" maxlength="13" hidden>
     <label for="senha" id="l-senha" hidden>Senha da reunião</label>
     <input id="senha" hidden>
+    <label for="fundo-arquivo">Fundo de tela <span>(opcional)</span></label>
+    <div class="fundo-linha">
+     <input id="fundo-arquivo" type="file" accept="image/jpeg,image/png" hidden>
+     <button type="button" id="fundo-botao">Usar minha imagem</button>
+     <img id="fundo-previa" alt="Imagem escolhida para o fundo" hidden>
+     <a href="#" id="fundo-tirar" hidden>Retirar</a>
+    </div>
+    <p class="fundo-nota" id="fundo-nota">Os fundos do MBA já estão na aula: seta ao lado de Vídeo, Escolher plano de fundo. Para usar uma imagem sua, escolha o arquivo aqui, antes de entrar.</p>
     <button type="submit" id="entrar">Entrar na aula</button>
    </form>
    <div class="status" id="status" role="status" aria-live="polite"></div>
@@ -102,6 +116,7 @@ footer{background:var(--escuro);color:#BFB3A3;font-size:12px;padding:14px max(5v
 </div>
 
 <script src="config.js"></script>
+<script src="fundos/lista.js"></script>
 <script>
 {
 const C = window.SALA || {};
@@ -149,6 +164,65 @@ if (P.nome.length >= 3) {
   $("trocar").addEventListener("click", ev => { ev.preventDefault(); $("ola").hidden = true; $("identidade").hidden = false; $("nome").focus(); });
 }
 
+// Fundo de tela: imagem do próprio aluno (fica só neste navegador) e fundos do MBA (fundos/lista.js).
+let fundoProprio = null;
+$("fundo-botao").addEventListener("click", () => $("fundo-arquivo").click());
+$("fundo-arquivo").addEventListener("change", () => {
+  const f = $("fundo-arquivo").files[0];
+  if (!f) return;
+  if (!/^image\/(jpeg|png)$/.test(f.type) || f.size > 12 * 1024 * 1024) {
+    $("fundo-nota").textContent = "Escolha uma imagem JPG ou PNG de até 12 MB."; $("fundo-arquivo").value = ""; return;
+  }
+  if (fundoProprio) URL.revokeObjectURL(fundoProprio.url);
+  fundoProprio = { url: URL.createObjectURL(f), nome: f.name };
+  $("fundo-previa").src = fundoProprio.url; $("fundo-previa").hidden = false; $("fundo-tirar").hidden = false;
+  $("fundo-nota").textContent = "Imagem pronta. Na aula, ela será a primeira opção em Escolher plano de fundo (seta ao lado de Vídeo).";
+});
+$("fundo-tirar").addEventListener("click", ev => {
+  ev.preventDefault();
+  if (fundoProprio) URL.revokeObjectURL(fundoProprio.url);
+  fundoProprio = null; $("fundo-arquivo").value = "";
+  $("fundo-previa").hidden = true; $("fundo-tirar").hidden = true;
+  $("fundo-nota").textContent = "Os fundos do MBA já estão na aula: seta ao lado de Vídeo, Escolher plano de fundo. Para usar uma imagem sua, escolha o arquivo aqui, antes de entrar.";
+});
+function listaDeFundos(versao) {
+  const base = new URL("fundos/", location.href).href;
+  const lista = [];
+  if (fundoProprio) lista.push({ id: "minha", displayName: "Minha imagem", fileName: "minha-imagem.jpg", url: fundoProprio.url });
+  lista.push({ id: "blur", displayName: "blur", fileName: "blur.png", url: `https://source.zoom.us/${versao}/lib/image/blur.png` });
+  for (const f of (window.FUNDOS || [])) lista.push({ id: f.id, displayName: f.displayName, fileName: f.fileName, url: base + f.fileName });
+  return lista;
+}
+// O Zoom só aceita a lista antes de o participante mexer no fundo pelo menu: por isso ela é entregue logo na entrada.
+// Entrega da lista ao Zoom. A pré-visualização só mostra a lista entregue depois de montada, e repetir a entrega
+// depois que a pessoa escolheu um fundo descarta a escolha. Por isso: uma entrega na abertura, uma assim que a
+// pré-visualização aparece e, na entrada, só se o Zoom ainda não tiver a lista.
+function entregarFundos(Z, versao, tentativa = 0) {
+  if (P.marca !== "mba" && !fundoProprio) return;
+  const vbList = P.marca === "mba" ? listaDeFundos(versao) : listaDeFundos(versao).slice(0, 2);
+  try {
+    Z.updateVirtualBackgroundList({ vbList, success: () => {}, error: () => { if (tentativa < 3) setTimeout(() => entregarFundos(Z, versao, tentativa + 1), 1500); } });
+  } catch (e) {}
+}
+function entregarNaPrevia(Z, versao) {
+  let voltas = 0;
+  const olhar = setInterval(() => {
+    const raiz = $("zmmtg-root");
+    const previa = raiz && (raiz.querySelector('[class*="preview"]') || [...raiz.querySelectorAll("button")].find(b => /plano|fundo|background/i.test(b.textContent)));
+    if (previa) { clearInterval(olhar); entregarFundos(Z, versao); }
+    else if (++voltas > 150) clearInterval(olhar);
+  }, 200);
+  return () => clearInterval(olhar);
+}
+function entregarSeFaltar(Z, versao) {
+  try {
+    Z.getVirtualBackgroundStatus({
+      success: r => { const ids = ((r && r.result && r.result.vbList) || []).map(v => v.id); if (!ids.includes("elegante01") && !ids.includes("minha")) entregarFundos(Z, versao); },
+      error: () => entregarFundos(Z, versao)
+    });
+  } catch (e) {}
+}
+
 const status = (t, tipo = "") => { const s = $("status"); s.textContent = t; s.className = "status " + tipo; };
 const ERROS = {
   3008: "A aula ainda não começou. Aguarde o professor abrir a sala e tente de novo.",
@@ -188,8 +262,10 @@ function voltarAntessala() {
   $("entrar").disabled = false;
 }
 
-$("form").addEventListener("submit", async ev => {
-  ev.preventDefault();
+function falhou(e) { voltarAntessala(); status(msgErro(e), "erro"); }
+
+$("form").addEventListener("submit", ev => { ev.preventDefault(); entrar(); });
+async function entrar() {
   const nome = $("nome").value.trim(), email = $("email").value.trim();
   const mn = P.mn || $("reuniao").value.replace(/\D/g, "");
   const pwd = P.mn ? P.pwd : $("senha").value.trim();
@@ -216,23 +292,23 @@ $("form").addEventListener("submit", async ev => {
       patchJsMedia: true,
       leaveOnPageUnload: true,
       disableInvite: true,
-      success: () => Z.join({
+      success: () => { entregarFundos(Z, P.versao); const pararPrevia = entregarNaPrevia(Z, P.versao); Z.join({
         signature: dados.signature,
         sdkKey: dados.sdkKey || C.clientId,
         meetingNumber: mn,
         passWord: pwd,
         userName: nome,
         userEmail: email,
-        success: () => {},
-        error: e => { voltarAntessala(); status(msgErro(e), "erro"); }
-      }),
-      error: e => { voltarAntessala(); status(msgErro(e), "erro"); }
+        success: () => { pararPrevia(); entregarSeFaltar(Z, P.versao); },
+        error: falhou
+      }); },
+      error: falhou
     });
   } catch (e) {
     voltarAntessala();
     status((e && e.message) ? e.message : "Não foi possível entrar na aula.", "erro");
   }
-});
+}
 }
 </script>
 </body>
