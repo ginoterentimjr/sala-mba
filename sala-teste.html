@@ -212,14 +212,32 @@ function listaDeFundos(versao) {
   return lista;
 }
 // O Zoom só aceita a lista antes de o participante mexer no fundo pelo menu: por isso ela é entregue logo na entrada.
-// A entrega acontece uma única vez: repetir a lista faz o Zoom descartar o fundo já escolhido na pré-visualização.
-let fundosEntregues = false;
+// Entrega da lista ao Zoom. A pré-visualização só mostra a lista entregue depois de montada, e repetir a entrega
+// depois que a pessoa escolheu um fundo descarta a escolha. Por isso: uma entrega na abertura, uma assim que a
+// pré-visualização aparece e, na entrada, só se o Zoom ainda não tiver a lista.
 function entregarFundos(Z, versao, tentativa = 0) {
-  if (fundosEntregues) return;
   if (P.marca !== "mba" && !fundoProprio) return;
   const vbList = P.marca === "mba" ? listaDeFundos(versao) : listaDeFundos(versao).slice(0, 2);
   try {
-    Z.updateVirtualBackgroundList({ vbList, success: () => { fundosEntregues = true; }, error: () => { if (tentativa < 3) setTimeout(() => entregarFundos(Z, versao, tentativa + 1), 2000); } });
+    Z.updateVirtualBackgroundList({ vbList, success: () => {}, error: () => { if (tentativa < 3) setTimeout(() => entregarFundos(Z, versao, tentativa + 1), 1500); } });
+  } catch (e) {}
+}
+function entregarNaPrevia(Z, versao) {
+  let voltas = 0;
+  const olhar = setInterval(() => {
+    const raiz = $("zmmtg-root");
+    const previa = raiz && (raiz.querySelector('[class*="preview"]') || [...raiz.querySelectorAll("button")].find(b => /plano|fundo|background/i.test(b.textContent)));
+    if (previa) { clearInterval(olhar); entregarFundos(Z, versao); }
+    else if (++voltas > 150) clearInterval(olhar);
+  }, 200);
+  return () => clearInterval(olhar);
+}
+function entregarSeFaltar(Z, versao) {
+  try {
+    Z.getVirtualBackgroundStatus({
+      success: r => { const ids = ((r && r.result && r.result.vbList) || []).map(v => v.id); if (!ids.includes("elegante01") && !ids.includes("minha")) entregarFundos(Z, versao); },
+      error: () => entregarFundos(Z, versao)
+    });
   } catch (e) {}
 }
 
@@ -308,14 +326,14 @@ async function entrar(emEspera) {
       patchJsMedia: true,
       leaveOnPageUnload: true,
       disableInvite: true,
-      success: () => { entregarFundos(Z, P.versao); Z.join({
+      success: () => { entregarFundos(Z, P.versao); const pararPrevia = entregarNaPrevia(Z, P.versao); Z.join({
         signature: dados.signature,
         sdkKey: dados.sdkKey || C.clientId,
         meetingNumber: mn,
         passWord: pwd,
         userName: nome,
         userEmail: email,
-        success: () => { sairDaEspera(); const r2 = $("zmmtg-root"); if (r2) r2.style.display = "block"; entregarFundos(Z, P.versao); },
+        success: () => { sairDaEspera(); const r2 = $("zmmtg-root"); if (r2) r2.style.display = "block"; pararPrevia(); entregarSeFaltar(Z, P.versao); },
         error: falhou
       }); },
       error: falhou
